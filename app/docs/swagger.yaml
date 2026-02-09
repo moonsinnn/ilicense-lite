@@ -1,0 +1,199 @@
+basePath: /api
+definitions:
+  do.User:
+    properties:
+      client_id:
+        description: 客户端ID
+        example: xasdfsdf
+        type: string
+      email:
+        description: 用户邮箱
+        example: bill@126.com
+        type: string
+      id:
+        description: 用户ID
+        example: 1
+        type: integer
+      name:
+        description: 用户名称
+        example: bill
+        type: string
+      password:
+        description: 用户密码
+        example: xlasiefska
+        type: string
+    type: object
+  http.BaseResponse-any:
+    properties:
+      code:
+        description: 状态码
+        example: 0
+        type: integer
+      data:
+        description: 实际数据
+      message:
+        description: 消息
+        example: ok
+        type: string
+    type: object
+  http.BaseResponse-array_do_User:
+    properties:
+      code:
+        description: 状态码
+        example: 0
+        type: integer
+      data:
+        description: 实际数据
+        items:
+          $ref: '#/definitions/do.User'
+        type: array
+      message:
+        description: 消息
+        example: ok
+        type: string
+    type: object
+  http.BaseResponse-do_User:
+    properties:
+      code:
+        description: 状态码
+        example: 0
+        type: integer
+      data:
+        allOf:
+        - $ref: '#/definitions/do.User'
+        description: 实际数据
+      message:
+        description: 消息
+        example: ok
+        type: string
+    type: object
+  request.UserAddRequest:
+    properties:
+      email:
+        description: 用户邮箱
+        example: bill@126.com
+        type: string
+      name:
+        description: 用户名称
+        example: bill
+        type: string
+      password:
+        description: 用户密码
+        example: "111111"
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  request.UserQueryRequest:
+    properties:
+      page:
+        description: 页码，从1开始
+        example: 1
+        type: integer
+      size:
+        description: 每页数量
+        example: 10
+        type: integer
+    required:
+    - page
+    - size
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: 这是gin-app服务的接口文档.
+  title: Gin App API
+  version: "1.0"
+paths:
+  /api/user/add:
+    post:
+      consumes:
+      - application/json
+      description: 添加用户信息
+      parameters:
+      - description: 添加参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserAddRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/http.BaseResponse-do_User'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+      summary: 用户添加接口
+      tags:
+      - User
+  /api/user/get:
+    get:
+      consumes:
+      - application/json
+      description: 通过用户ID查询用户详情
+      parameters:
+      - description: 用户ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/http.BaseResponse-do_User'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+        "404":
+          description: 用户不存在
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+      summary: 获取用户信息
+      tags:
+      - User
+  /api/user/query:
+    post:
+      consumes:
+      - application/json
+      description: 分页查询用户列表
+      parameters:
+      - description: 查询参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserQueryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/http.BaseResponse-array_do_User'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+      summary: 用户查询接口
+      tags:
+      - User
+swagger: "2.0"
