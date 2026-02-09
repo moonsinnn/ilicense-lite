@@ -278,11 +278,5 @@ func main() {
 		return
 	}
 	log.Printf("geo json data successfully saved to %s\n", geoJsonFilePath)
-	// 如果你需要查看数据，解析和输出 JSON
-	// var result map[string]interface{}
-	// if err := json.Unmarshal(data, &result); err != nil {
-	// 	log.Println("Error unmarshalling JSON:", err)
-	// 	return
-	// }
-	// log.Println("OSM Data:", result)
+
 }
