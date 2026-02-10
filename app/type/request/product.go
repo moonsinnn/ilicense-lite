@@ -14,9 +14,9 @@ type (
 	ProductQueryRequest struct {
 		Page   int    `json:"page" form:"page" binding:"required" example:"1"`  // 页码，从1开始
 		Size   int    `json:"size" form:"size" binding:"required" example:"10"` // 每页数量
-		Name   string `form:"name" json:"name" binding:"required" example:"product-a"`
-		Code   string `form:"code" json:"code" binding:"required" example:"customer-a"`
-		Status *uint8 `form:"status" json:"status" binding:"required" example:"1"`
+		Name   string `form:"name" json:"name" example:"product-a"`
+		Code   string `form:"code" json:"code" example:"customer-a"`
+		Status *uint8 `form:"status" json:"status" example:"1"`
 	}
 
 	ProductQueryResponse struct {

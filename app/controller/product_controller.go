@@ -2,9 +2,6 @@ package controller
 
 import (
 	"fmt"
-	url2 "net/url"
-	"time"
-
 	"ilicense-lite/library/http"
 	"ilicense-lite/service"
 	"ilicense-lite/type/request"
@@ -12,21 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var userService = service.NewUserService()
-
-func UserLogin(ctx *gin.Context) {
-	var in request.UserLoginRequest
-	if err := ctx.ShouldBindJSON(&in); err != nil {
-		http.JsonResponse(ctx, err)
-		return
-	}
-	result, err := userService.UserLogin(ctx.Request.Context(), &in)
-	if err != nil {
-		http.JsonResponse(ctx, err)
-		return
-	}
-	http.JsonResponse(ctx, result)
-}
+var productService = service.NewProductService()
 
 // UserGet
 // @Summary      获取用户信息
@@ -39,13 +22,13 @@ func UserLogin(ctx *gin.Context) {
 // @Failure      400  {object}  http.BaseResponse[any]      "参数错误"
 // @Failure      404  {object}  http.BaseResponse[any]      "用户不存在"
 // @Router       /api/user/get [get]
-func UserGet(ctx *gin.Context) {
-	var in request.UserGetRequest
+func ProductGet(ctx *gin.Context) {
+	var in request.ProductGetRequest
 	if err := ctx.ShouldBindQuery(&in); err != nil {
 		http.JsonResponse(ctx, err)
 		return
 	}
-	result, err := userService.UserGet(ctx.Request.Context(), &in)
+	result, err := productService.ProductGet(ctx.Request.Context(), &in)
 	if err != nil {
 		http.JsonResponse(ctx, err)
 		return
@@ -64,13 +47,13 @@ func UserGet(ctx *gin.Context) {
 // @Failure      400  {object}  http.BaseResponse[any]  "参数错误"
 // @Failure      500  {object}  http.BaseResponse[any]  "内部错误"
 // @Router       /api/user/add [post]
-func UserAdd(ctx *gin.Context) {
-	var in request.UserAddRequest
+func ProductAdd(ctx *gin.Context) {
+	var in request.ProductAddRequest
 	if err := ctx.ShouldBindJSON(&in); err != nil {
 		http.JsonResponse(ctx, err)
 		return
 	}
-	result, err := userService.UserAdd(ctx.Request.Context(), &in)
+	result, err := productService.ProductAdd(ctx.Request.Context(), &in)
 	if err != nil {
 		http.JsonResponse(ctx, err)
 		return
@@ -89,35 +72,17 @@ func UserAdd(ctx *gin.Context) {
 // @Failure      400  {object}  http.BaseResponse[any]  "参数错误"
 // @Failure      500  {object}  http.BaseResponse[any]  "内部错误"
 // @Router       /api/user/query [post]
-func UserQuery(ctx *gin.Context) {
-	var in request.UserQueryRequest
+func ProductQuery(ctx *gin.Context) {
+	var in request.ProductQueryRequest
 	if err := ctx.ShouldBindJSON(&in); err != nil {
 		http.JsonResponse(ctx, err)
 		return
 	}
 	fmt.Println(ctx.Get("userID"))
-	result, err := userService.UserQuery(ctx.Request.Context(), &in)
+	result, err := productService.ProductQuery(ctx.Request.Context(), &in)
 	if err != nil {
 		http.JsonResponse(ctx, err)
 		return
 	}
 	http.JsonResponse(ctx, result)
-}
-
-func UserSignIn(ctx *gin.Context) {
-	clientID := "flashcat.cloud"
-	redirectURI := "http://localhost:8080/api/user/sign/back?source=sso"
-	state := time.Now().Unix()
-	url := "https://auth.oncallbox.com/realms/oncallbox/protocol/openid-connect/auth?client_id=%s&nonce=%d&redirect_uri=%s&response_type=code&scope=openid+profile+email+phone&state=%d"
-	rawURL := fmt.Sprintf(url, clientID, state, url2.QueryEscape(redirectURI), state)
-	http.JsonResponse(ctx, rawURL)
-}
-
-func UserSignBack(ctx *gin.Context) {
-	var in request.UserSignBackRequest
-	if err := ctx.ShouldBindQuery(&in); err != nil {
-		http.JsonResponse(ctx, err)
-		return
-	}
-	http.JsonResponse(ctx, in)
 }

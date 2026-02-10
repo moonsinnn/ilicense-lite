@@ -2,10 +2,13 @@ package dao
 
 import (
 	"context"
+	"errors"
 	"ilicense-lite/type/request"
 
 	"ilicense-lite/bootstrap/client"
 	"ilicense-lite/type/do"
+
+	"gorm.io/gorm"
 )
 
 type ProductDao struct{}
@@ -16,6 +19,9 @@ func NewProductDao() *ProductDao {
 func (*ProductDao) ProductGet(ctx context.Context, id uint64) (*do.Product, error) {
 	m := &do.Product{ID: id}
 	if err := client.MysqlDemo.WithContext(ctx).First(m).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return m, nil
@@ -47,7 +53,7 @@ func (*ProductDao) ProductQuery(ctx context.Context, input *request.ProductQuery
 		tx = tx.Where("code = ?", input.Code)
 	}
 
-	// ⭐ status 用指针判断
+	// status 用指针判断
 	if input.Status != nil {
 		tx = tx.Where("status = ?", *input.Status)
 	}
@@ -60,7 +66,7 @@ func (*ProductDao) ProductQuery(ctx context.Context, input *request.ProductQuery
 	err = tx.
 		Order("id DESC").
 		Offset(offset).
-		Limit(input.Page).
+		Limit(input.Size).
 		Find(&items).Error
 	return
 }

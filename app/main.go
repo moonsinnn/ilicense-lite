@@ -34,9 +34,8 @@ func main() {
 	r.Use(middleware.LoggerMiddleware())
 	r.Use(middleware.RecoveryMiddleware())
 	r.Use(cors.Default())
-
+	r.Use(middleware.AuthMiddleware())
 	router.Init(r)
-	// r.Run(fmt.Sprintf(":%d", config.Config.App.Port))
 	srv := endless.NewServer(fmt.Sprintf(":%d", config.Config.App.Port), r)
 	srv.RegisterOnShutdown(func() {
 		fmt.Println("shutting down server...")
