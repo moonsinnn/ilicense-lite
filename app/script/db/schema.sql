@@ -1,3 +1,4 @@
+use demo;
 -- 产品表
 CREATE TABLE IF NOT EXISTS product
 (
@@ -14,16 +15,16 @@ CREATE TABLE IF NOT EXISTS product
 -- 客户表
 CREATE TABLE IF NOT EXISTS customer
 (
-    id             BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    code           VARCHAR(50) UNIQUE NOT NULL DEFAULT '' COMMENT '客户编号',
-    name           VARCHAR(100)       NOT NULL DEFAULT '' COMMENT '客户名称',
-    contact_person VARCHAR(50)                 DEFAULT '' COMMENT '联系人',
-    phone          VARCHAR(20)                 DEFAULT '' COMMENT '联系电话',
-    email          VARCHAR(100)                DEFAULT '' COMMENT '联系邮箱',
-    address        TEXT COMMENT '公司地址',
-    status         TINYINT UNSIGNED   NOT NULL DEFAULT 1 COMMENT '状态: 1正常, 0禁用',
-    created_at     DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at     DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    id         BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    code       VARCHAR(50) UNIQUE NOT NULL DEFAULT '' COMMENT '客户编号',
+    name       VARCHAR(100)       NOT NULL DEFAULT '' COMMENT '客户名称',
+    contact    VARCHAR(50)                 DEFAULT '' COMMENT '联系人',
+    phone      VARCHAR(20)                 DEFAULT '' COMMENT '联系电话',
+    email      VARCHAR(100)                DEFAULT '' COMMENT '联系邮箱',
+    address    TEXT COMMENT '公司地址',
+    status     TINYINT UNSIGNED   NOT NULL DEFAULT 1 COMMENT '状态: 1正常, 0禁用',
+    created_at DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='客户表';
 

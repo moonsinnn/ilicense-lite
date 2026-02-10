@@ -6,7 +6,7 @@ type (
 		Password string `json:"password"`
 	}
 	UserGetRequest struct {
-		ID int64 `form:"id"`
+		ID uint64 `form:"id"`
 	}
 	UserAddRequest struct {
 		Name     string `json:"name" form:"name" binding:"required" example:"bill"`           // 用户名称
@@ -14,7 +14,7 @@ type (
 		Password string `json:"password" form:"password" binding:"required" example:"111111"` // 用户密码
 	}
 	UserQueryRequest struct {
-		Page int64 `json:"page" form:"page" binding:"required" example:"1"`  // 页码，从1开始
+		Page int   `json:"page" form:"page" binding:"required" example:"1"`  // 页码，从1开始
 		Size int64 `json:"size" form:"size" binding:"required" example:"10"` // 每页数量
 	}
 	UserSignBackRequest struct {
