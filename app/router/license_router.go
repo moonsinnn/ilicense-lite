@@ -11,4 +11,6 @@ func LicenseRouterInit(e *gin.Engine) {
 	group.GET("/get", controller.LicenseGet)
 	group.POST("/add", controller.LicenseAdd)
 	group.POST("/query", controller.LicenseQuery)
+	group.POST("/activate", controller.LicenseActivate)
+	group.POST("/renew", controller.LicenseRenew)
 }

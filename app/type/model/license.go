@@ -7,6 +7,7 @@ type License struct {
 	Code           string    `gorm:"column:code;" json:"code" example:"license-a"`                       // 代码, 唯一标识
 	ProductID      uint64    `gorm:"column:product_id;" json:"product_id" example:"1"`                   //	产品ID
 	CustomerID     uint64    `gorm:"column:customer_id;" json:"customer_id" example:"1"`                 //	客户ID
+	IssuerID       uint64    `gorm:"column:issuer_id;" json:"issuer_id" example:"1"`                     //	客户ID
 	ActivationCode string    `gorm:"column:activation_code;" json:"activation_code" example:"xxxx-zzzz"` // 激活码(Base64 URL安全编码)
 	IssueAt        time.Time `gorm:"column:issue_at;" json:"issue_at" example:"2020-10-11T10:10:10"`     // 签发日期
 	ExpireAt       time.Time `gorm:"column:expire_at;" json:"expire_at" example:"2020-10-11T10:10:10"`   // 到期日期

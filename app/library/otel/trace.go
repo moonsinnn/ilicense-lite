@@ -8,7 +8,6 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/sdk/trace"
 )
 
@@ -18,9 +17,9 @@ func InitTracer() {
 		log.Fatalf("init resource err: %v", err)
 	}
 	// console exporter
-	consoleExporter, err := stdouttrace.New(
-		stdouttrace.WithPrettyPrint(),
-	)
+	// consoleExporter, err := stdouttrace.New(
+	// 	stdouttrace.WithPrettyPrint(),
+	// )
 	if err != nil {
 		logrus.Fatalf("failed to initialize stdouttrace consoleExporter: %v", err)
 	}
@@ -41,7 +40,7 @@ func InitTracer() {
 	}
 	// 创建多个BatchSpanProcessor
 	traceProvider := trace.NewTracerProvider(
-		trace.WithBatcher(consoleExporter),
+		// trace.WithBatcher(consoleExporter),
 		// trace.WithBatcher(jaegerExporter),
 		trace.WithBatcher(otlpExporter),
 		trace.WithResource(rce),

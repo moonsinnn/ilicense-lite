@@ -1,4 +1,19 @@
 use demo;
+-- 签发方表
+CREATE TABLE if not exists issuer
+(
+    id            BIGINT PRIMARY KEY AUTO_INCREMENT,
+    code          VARCHAR(50) UNIQUE NOT NULL default '' COMMENT '签发方编码, 唯一标识',
+    name          VARCHAR(100)       NOT NULL default '' COMMENT '签发方名称',
+    description   TEXT COMMENT '描述',
+    public_key    TEXT               NOT NULL COMMENT '公钥(Base64)',
+    private_key   TEXT               NOT NULL COMMENT '私钥(Base64,加密存储)', --  改为数据库存储
+    key_algorithm VARCHAR(20)        not null DEFAULT 'RSA' COMMENT '加密算法',
+    key_size      INT                not null DEFAULT 2048 COMMENT '密钥长度',
+    status        TINYINT            not null DEFAULT 1 COMMENT '状态: 1启用 0禁用',
+    created_at    DATETIME           not null DEFAULT CURRENT_TIMESTAMP,
+    updated_at    DATETIME           not null DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 -- 产品表
 CREATE TABLE IF NOT EXISTS product
 (
@@ -35,6 +50,7 @@ CREATE TABLE IF NOT EXISTS license
     code            VARCHAR(50) UNIQUE NOT NULL DEFAULT '' COMMENT 'License编号, 系统唯一',
     product_id      BIGINT UNSIGNED    NOT NULL COMMENT '产品ID, 外键关联 product',
     customer_id     BIGINT UNSIGNED    NOT NULL COMMENT '客户ID, 外键关联 customer',
+    issuer_id       BIGINT UNSIGNED    NOT NULL COMMENT '机构ID, 外键关联 issuer',
     activation_code TEXT               NOT NULL COMMENT '激活码(Base64 URL安全编码)',
     issue_at        DATETIME           NOT NULL COMMENT '签发日期',
     expire_at       DATETIME           NOT NULL COMMENT '到期日期',
@@ -45,7 +61,7 @@ CREATE TABLE IF NOT EXISTS license
     created_at      DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_customer_product (customer_id, product_id),
-    INDEX idx_expiry_date (expiry_date)
+    INDEX idx_expire_at (expire_at)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='License记录表';
 

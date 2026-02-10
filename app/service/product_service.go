@@ -40,5 +40,5 @@ func (this *ProductService) ProductQuery(ctx context.Context, in *input.ProductQ
 	if err != nil {
 		return nil, err
 	}
-	return &output.ProductQueryOutput{total, items}, nil
+	return &output.ProductQueryOutput{Total: total, Items: items}, nil
 }

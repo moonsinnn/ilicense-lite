@@ -9,4 +9,5 @@ func Init(r *gin.Engine) {
 	ProductRouterInit(r)
 	CustomerRouterInit(r)
 	LicenseRouterInit(r)
+	IssuerRouterInit(r)
 }

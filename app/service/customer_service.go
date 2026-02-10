@@ -43,5 +43,5 @@ func (this *CustomerService) CustomerQuery(ctx context.Context, in *input.Custom
 	if err != nil {
 		return nil, err
 	}
-	return &output.CustomerQueryOutput{total, items}, nil
+	return &output.CustomerQueryOutput{Total: total, Items: items}, nil
 }
