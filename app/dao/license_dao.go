@@ -11,13 +11,13 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProductDao struct{}
+type LicenseDao struct{}
 
-func NewProductDao() *ProductDao {
-	return &ProductDao{}
+func NewLicenseDao() *LicenseDao {
+	return &LicenseDao{}
 }
-func (*ProductDao) ProductGet(ctx context.Context, id uint64) (*model.Product, error) {
-	m := &model.Product{ID: id}
+func (*LicenseDao) LicenseGet(ctx context.Context, id uint64) (*model.License, error) {
+	m := &model.License{ID: id}
 	if err := client.MysqlDemo.WithContext(ctx).First(m).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -26,24 +26,24 @@ func (*ProductDao) ProductGet(ctx context.Context, id uint64) (*model.Product, e
 	}
 	return m, nil
 }
-func (*ProductDao) ProductAdd(ctx context.Context, m *model.Product) error {
+func (*LicenseDao) LicenseAdd(ctx context.Context, m *model.License) error {
 	if err := client.MysqlDemo.WithContext(ctx).Create(m).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (*ProductDao) ProductList(ctx context.Context) ([]model.Product, error) {
-	var items []model.Product
+func (*LicenseDao) LicenseList(ctx context.Context) ([]model.License, error) {
+	var items []model.License
 	if err := client.MysqlDemo.WithContext(ctx).Find(&items).Error; err != nil {
 		return nil, err
 	}
 	return items, nil
 }
 
-func (*ProductDao) ProductQuery(ctx context.Context, input *input.ProductQueryInput) (items []model.Product, total int64, err error) {
+func (*LicenseDao) LicenseQuery(ctx context.Context, input *input.LicenseQueryInput) (items []model.License, total int64, err error) {
 	offset := (input.Page - 1) * input.Size
-	tx := client.MysqlDemo.WithContext(ctx).Model(&model.Product{})
+	tx := client.MysqlDemo.WithContext(ctx).Model(&model.License{})
 	// 动态条件
 	if input.Name != "" {
 		tx = tx.Where("name LIKE ?", input.Name+"%")

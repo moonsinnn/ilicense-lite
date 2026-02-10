@@ -4,8 +4,9 @@ import (
 	"context"
 	"ilicense-lite/bootstrap/logger"
 	"ilicense-lite/dao"
-	"ilicense-lite/type/do"
-	"ilicense-lite/type/request"
+	"ilicense-lite/type/input"
+	"ilicense-lite/type/model"
+	"ilicense-lite/type/output"
 )
 
 type ProductService struct {
@@ -18,22 +19,26 @@ func NewProductService() *ProductService {
 	}
 }
 
-func (this *ProductService) ProductGet(ctx context.Context, in *request.ProductGetRequest) (interface{}, error) {
+func (this *ProductService) ProductGet(ctx context.Context, in *input.ProductGetInput) (interface{}, error) {
 	logger.ServiceLogger.WithContext(ctx).Infof("********%+v", "test")
 	return this.productDao.ProductGet(ctx, in.ID)
 }
-func (this *ProductService) ProductAdd(ctx context.Context, in *request.ProductAddRequest) (interface{}, error) {
-	m := &do.Product{Name: in.Name, Code: in.Code, Description: in.Description}
+func (this *ProductService) ProductAdd(ctx context.Context, in *input.ProductAddInput) (interface{}, error) {
+	m := &model.Product{
+		Name:        in.Name,
+		Code:        in.Code,
+		Description: in.Description,
+	}
 	if err := this.productDao.ProductAdd(ctx, m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (this *ProductService) ProductQuery(ctx context.Context, in *request.ProductQueryRequest) (interface{}, error) {
+func (this *ProductService) ProductQuery(ctx context.Context, in *input.ProductQueryInput) (interface{}, error) {
 	items, total, err := this.productDao.ProductQuery(ctx, in)
 	if err != nil {
 		return nil, err
 	}
-	return &request.ProductQueryResponse{total, items}, nil
+	return &output.ProductQueryOutput{total, items}, nil
 }

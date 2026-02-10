@@ -7,4 +7,6 @@ import (
 func Init(r *gin.Engine) {
 	MetricRouterInit(r)
 	ProductRouterInit(r)
+	CustomerRouterInit(r)
+	LicenseRouterInit(r)
 }

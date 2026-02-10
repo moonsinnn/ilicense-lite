@@ -9,26 +9,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var productService = service.NewProductService()
+var licenseService = service.NewLicenseService()
 
-// ProductGet
-// @Summary      获取产品信息
+// LicenseGet
+// @Summary      获取许可证信息
 // @Description  通过ID查询信息详情
-// @Tags         Product
+// @Tags         License
 // @Accept       json
 // @Produce      json
 // @Param        id  query  int  true  "产品ID"
 // @Success      200  {object}  http.BaseResponse[model.User]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]      "参数错误"
 // @Failure      404  {object}  http.BaseResponse[any]      "用户不存在"
-// @Router       /api/product/get [get]
-func ProductGet(ctx *gin.Context) {
-	var in input.ProductGetInput
+// @Router       /api/license/get [get]
+func LicenseGet(ctx *gin.Context) {
+	var in input.LicenseGetInput
 	if err := ctx.ShouldBindQuery(&in); err != nil {
 		http.JsonResponse(ctx, err)
 		return
 	}
-	result, err := productService.ProductGet(ctx.Request.Context(), &in)
+	result, err := licenseService.LicenseGet(ctx.Request.Context(), &in)
 	if err != nil {
 		http.JsonResponse(ctx, err)
 		return
@@ -36,24 +36,24 @@ func ProductGet(ctx *gin.Context) {
 	http.JsonResponse(ctx, result)
 }
 
-// ProductAdd
-// @Summary      产品添加接口
-// @Description  添加产品信息
-// @Tags         Product
+// LicenseAdd
+// @Summary      许可证添加接口
+// @Description  添加许可证信息
+// @Tags         License
 // @Accept       json
 // @Produce      json
 // @Param        input  body  input.UserAddRequest  true  "添加参数"
 // @Success      200  {object}  http.BaseResponse[model.User]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]  "参数错误"
 // @Failure      500  {object}  http.BaseResponse[any]  "内部错误"
-// @Router       /api/product/add [post]
-func ProductAdd(ctx *gin.Context) {
-	var in input.ProductAddInput
+// @Router       /api/license/add [post]
+func LicenseAdd(ctx *gin.Context) {
+	var in input.LicenseAddInput
 	if err := ctx.ShouldBindJSON(&in); err != nil {
 		http.JsonResponse(ctx, err)
 		return
 	}
-	result, err := productService.ProductAdd(ctx.Request.Context(), &in)
+	result, err := licenseService.LicenseAdd(ctx.Request.Context(), &in)
 	if err != nil {
 		http.JsonResponse(ctx, err)
 		return
@@ -61,25 +61,25 @@ func ProductAdd(ctx *gin.Context) {
 	http.JsonResponse(ctx, result)
 }
 
-// ProductQuery
-// @Summary      产品查询接口
-// @Description  分页查询产品列表
-// @Tags         Product
+// LicenseQuery
+// @Summary      许可证查询接口
+// @Description  分页查询许可证列表
+// @Tags         License
 // @Accept       json
 // @Produce      json
 // @Param        input  body  input.UserQueryRequest  true  "查询参数"
 // @Success      200  {object}  http.BaseResponse[[]model.User]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]  "参数错误"
 // @Failure      500  {object}  http.BaseResponse[any]  "内部错误"
-// @Router       /api/product/query [post]
-func ProductQuery(ctx *gin.Context) {
-	var in input.ProductQueryInput
+// @Router       /api/license/query [post]
+func LicenseQuery(ctx *gin.Context) {
+	var in input.LicenseQueryInput
 	if err := ctx.ShouldBindJSON(&in); err != nil {
 		http.JsonResponse(ctx, err)
 		return
 	}
 	fmt.Println(ctx.Get("userID"))
-	result, err := productService.ProductQuery(ctx.Request.Context(), &in)
+	result, err := licenseService.LicenseQuery(ctx.Request.Context(), &in)
 	if err != nil {
 		http.JsonResponse(ctx, err)
 		return

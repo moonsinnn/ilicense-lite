@@ -41,28 +41,28 @@ func main() {
 		fmt.Println("shutting down server...")
 	})
 	srv.RegisterSignalHook(endless.PRE_SIGNAL, syscall.SIGINT, func() {
-		log.Println("do ctrl+c before shutting down server...")
+		log.Println("model ctrl+c before shutting down server...")
 	})
 	srv.RegisterSignalHook(endless.POST_SIGNAL, syscall.SIGINT, func() {
-		log.Println("do ctrl+c after shutting down server...")
+		log.Println("model ctrl+c after shutting down server...")
 	})
 	srv.RegisterSignalHook(endless.PRE_SIGNAL, syscall.SIGTERM, func() {
-		log.Println("do kill before shutting down server...")
+		log.Println("model kill before shutting down server...")
 	})
 	srv.RegisterSignalHook(endless.POST_SIGNAL, syscall.SIGTERM, func() {
-		log.Println("do kill after shutting down server...")
+		log.Println("model kill after shutting down server...")
 	})
 	srv.RegisterSignalHook(endless.PRE_SIGNAL, syscall.SIGUSR1, func() {
-		log.Println("do usr-1 before shutting down server...")
+		log.Println("model usr-1 before shutting down server...")
 	})
 	srv.RegisterSignalHook(endless.POST_SIGNAL, syscall.SIGUSR1, func() {
-		log.Println("do usr-1 after shutting down server...")
+		log.Println("model usr-1 after shutting down server...")
 	})
 	srv.RegisterSignalHook(endless.PRE_SIGNAL, syscall.SIGUSR2, func() {
-		log.Println("do usr-2 before shutting down server...")
+		log.Println("model usr-2 before shutting down server...")
 	})
 	srv.RegisterSignalHook(endless.POST_SIGNAL, syscall.SIGUSR2, func() {
-		log.Println("do usr-2 after shutting down server...")
+		log.Println("model usr-2 after shutting down server...")
 	})
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalf("server stopping about %v", err)

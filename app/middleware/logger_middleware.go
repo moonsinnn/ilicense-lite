@@ -69,6 +69,6 @@ func LoggerMiddleware() gin.HandlerFunc {
 			"request_body":  string(requestBody),
 			"response_body": responseBody,
 			"content_type":  contentType,
-		}).Info("request processed")
+		}).Info("input processed")
 	}
 }

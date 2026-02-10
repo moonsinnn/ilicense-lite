@@ -11,13 +11,13 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProductDao struct{}
+type CustomerDao struct{}
 
-func NewProductDao() *ProductDao {
-	return &ProductDao{}
+func NewCustomerDao() *CustomerDao {
+	return &CustomerDao{}
 }
-func (*ProductDao) ProductGet(ctx context.Context, id uint64) (*model.Product, error) {
-	m := &model.Product{ID: id}
+func (*CustomerDao) CustomerGet(ctx context.Context, id uint64) (*model.Customer, error) {
+	m := &model.Customer{ID: id}
 	if err := client.MysqlDemo.WithContext(ctx).First(m).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -26,24 +26,24 @@ func (*ProductDao) ProductGet(ctx context.Context, id uint64) (*model.Product, e
 	}
 	return m, nil
 }
-func (*ProductDao) ProductAdd(ctx context.Context, m *model.Product) error {
+func (*CustomerDao) CustomerAdd(ctx context.Context, m *model.Customer) error {
 	if err := client.MysqlDemo.WithContext(ctx).Create(m).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (*ProductDao) ProductList(ctx context.Context) ([]model.Product, error) {
-	var items []model.Product
+func (*CustomerDao) CustomerList(ctx context.Context) ([]model.Customer, error) {
+	var items []model.Customer
 	if err := client.MysqlDemo.WithContext(ctx).Find(&items).Error; err != nil {
 		return nil, err
 	}
 	return items, nil
 }
 
-func (*ProductDao) ProductQuery(ctx context.Context, input *input.ProductQueryInput) (items []model.Product, total int64, err error) {
+func (*CustomerDao) CustomerQuery(ctx context.Context, input *input.CustomerQueryInput) (items []model.Customer, total int64, err error) {
 	offset := (input.Page - 1) * input.Size
-	tx := client.MysqlDemo.WithContext(ctx).Model(&model.Product{})
+	tx := client.MysqlDemo.WithContext(ctx).Model(&model.Customer{})
 	// 动态条件
 	if input.Name != "" {
 		tx = tx.Where("name LIKE ?", input.Name+"%")

@@ -31,11 +31,11 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "添加参数",
-                        "name": "request",
+                        "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UserAddRequest"
+                            "$ref": "#/definitions/input.UserAddRequest"
                         }
                     }
                 ],
@@ -121,11 +121,11 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "查询参数",
-                        "name": "request",
+                        "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UserQueryRequest"
+                            "$ref": "#/definitions/input.UserQueryRequest"
                         }
                     }
                 ],
@@ -153,7 +153,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "do.User": {
+        "model.User": {
             "type": "object",
             "properties": {
                 "client_id": {
@@ -213,7 +213,7 @@ const docTemplate = `{
                     "description": "实际数据",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/do.User"
+                        "$ref": "#/definitions/model.User"
                     }
                 },
                 "message": {
@@ -235,7 +235,7 @@ const docTemplate = `{
                     "description": "实际数据",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/do.User"
+                            "$ref": "#/definitions/model.User"
                         }
                     ]
                 },
@@ -246,7 +246,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UserAddRequest": {
+        "input.UserAddRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -271,7 +271,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UserQueryRequest": {
+        "input.UserQueryRequest": {
             "type": "object",
             "required": [
                 "page",
