@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+
 	"ilicense-lite/library/http"
 	"ilicense-lite/service"
 	"ilicense-lite/type/input"
@@ -18,7 +19,7 @@ var productService = service.NewProductService()
 // @Accept       json
 // @Produce      json
 // @Param        id  query  int  true  "产品ID"
-// @Success      200  {object}  http.BaseResponse[model.User]  "成功响应"
+// @Success      200  {object}  http.BaseResponse[model.Product]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]      "参数错误"
 // @Failure      404  {object}  http.BaseResponse[any]      "用户不存在"
 // @Router       /api/product/get [get]
@@ -42,8 +43,8 @@ func ProductGet(ctx *gin.Context) {
 // @Tags         Product
 // @Accept       json
 // @Produce      json
-// @Param        input  body  input.UserAddRequest  true  "添加参数"
-// @Success      200  {object}  http.BaseResponse[model.User]  "成功响应"
+// @Param        input  body  input.ProductAddInput  true  "添加参数"
+// @Success      200  {object}  http.BaseResponse[model.Product]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]  "参数错误"
 // @Failure      500  {object}  http.BaseResponse[any]  "内部错误"
 // @Router       /api/product/add [post]
@@ -67,8 +68,8 @@ func ProductAdd(ctx *gin.Context) {
 // @Tags         Product
 // @Accept       json
 // @Produce      json
-// @Param        input  body  input.UserQueryRequest  true  "查询参数"
-// @Success      200  {object}  http.BaseResponse[[]model.User]  "成功响应"
+// @Param        input  body  input.ProductQueryInput  true  "查询参数"
+// @Success      200  {object}  http.BaseResponse[[]model.Product]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]  "参数错误"
 // @Failure      500  {object}  http.BaseResponse[any]  "内部错误"
 // @Router       /api/product/query [post]

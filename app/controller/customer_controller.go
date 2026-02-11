@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+
 	"ilicense-lite/library/http"
 	"ilicense-lite/service"
 	"ilicense-lite/type/input"
@@ -18,7 +19,7 @@ var customerService = service.NewCustomerService()
 // @Accept       json
 // @Produce      json
 // @Param        id  query  int  true  "ID"
-// @Success      200  {object}  http.BaseResponse[model.User]  "成功响应"
+// @Success      200  {object}  http.BaseResponse[model.Customer]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]      "参数错误"
 // @Failure      404  {object}  http.BaseResponse[any]      "不存在"
 // @Router       /api/customer/get [get]
@@ -42,8 +43,8 @@ func CustomerGet(ctx *gin.Context) {
 // @Tags         Customer
 // @Accept       json
 // @Produce      json
-// @Param        input  body  input.UserAddRequest  true  "添加参数"
-// @Success      200  {object}  http.BaseResponse[model.User]  "成功响应"
+// @Param        input  body  input.CustomerAddInput  true  "添加参数"
+// @Success      200  {object}  http.BaseResponse[model.Customer]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]  "参数错误"
 // @Failure      500  {object}  http.BaseResponse[any]  "内部错误"
 // @Router       /api/customer/add [post]
@@ -67,8 +68,8 @@ func CustomerAdd(ctx *gin.Context) {
 // @Tags         Customer
 // @Accept       json
 // @Produce      json
-// @Param        input  body  input.UserQueryRequest  true  "查询参数"
-// @Success      200  {object}  http.BaseResponse[[]model.User]  "成功响应"
+// @Param        input  body  input.CustomerQueryInput  true  "查询参数"
+// @Success      200  {object}  http.BaseResponse[[]model.Customer]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]  "参数错误"
 // @Failure      500  {object}  http.BaseResponse[any]  "内部错误"
 // @Router       /api/customer/query [post]

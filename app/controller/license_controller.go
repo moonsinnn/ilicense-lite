@@ -19,7 +19,7 @@ var licenseService = service.NewLicenseService()
 // @Accept       json
 // @Produce      json
 // @Param        id  query  int  true  "产品ID"
-// @Success      200  {object}  http.BaseResponse[model.User]  "成功响应"
+// @Success      200  {object}  http.BaseResponse[model.License]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]      "参数错误"
 // @Failure      404  {object}  http.BaseResponse[any]      "用户不存在"
 // @Router       /api/license/get [get]
@@ -43,8 +43,8 @@ func LicenseGet(ctx *gin.Context) {
 // @Tags         License
 // @Accept       json
 // @Produce      json
-// @Param        input  body  input.UserAddRequest  true  "添加参数"
-// @Success      200  {object}  http.BaseResponse[model.User]  "成功响应"
+// @Param        input  body  input.LicenseAddInput  true  "添加参数"
+// @Success      200  {object}  http.BaseResponse[model.License]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]  "参数错误"
 // @Failure      500  {object}  http.BaseResponse[any]  "内部错误"
 // @Router       /api/license/add [post]
@@ -68,8 +68,8 @@ func LicenseAdd(ctx *gin.Context) {
 // @Tags         License
 // @Accept       json
 // @Produce      json
-// @Param        input  body  input.UserQueryRequest  true  "查询参数"
-// @Success      200  {object}  http.BaseResponse[[]model.User]  "成功响应"
+// @Param        input  body  input.LicenseQueryInput  true  "查询参数"
+// @Success      200  {object}  http.BaseResponse[[]model.License]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]  "参数错误"
 // @Failure      500  {object}  http.BaseResponse[any]  "内部错误"
 // @Router       /api/license/query [post]

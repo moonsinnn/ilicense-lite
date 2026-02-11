@@ -19,7 +19,7 @@ var issuerService = service.NewIssuerService()
 // @Accept       json
 // @Produce      json
 // @Param        id  query  int  true  "产品ID"
-// @Success      200  {object}  http.BaseResponse[model.User]  "成功响应"
+// @Success      200  {object}  http.BaseResponse[model.Issuer]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]      "参数错误"
 // @Failure      404  {object}  http.BaseResponse[any]      "用户不存在"
 // @Router       /api/issuer/get [get]
@@ -43,8 +43,8 @@ func IssuerGet(ctx *gin.Context) {
 // @Tags         Issuer
 // @Accept       json
 // @Produce      json
-// @Param        input  body  input.UserAddRequest  true  "添加参数"
-// @Success      200  {object}  http.BaseResponse[model.User]  "成功响应"
+// @Param        input  body  input.IssuerAddInput  true  "添加参数"
+// @Success      200  {object}  http.BaseResponse[model.Issuer]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]  "参数错误"
 // @Failure      500  {object}  http.BaseResponse[any]  "内部错误"
 // @Router       /api/issuer/add [post]
@@ -68,8 +68,8 @@ func IssuerAdd(ctx *gin.Context) {
 // @Tags         Issuer
 // @Accept       json
 // @Produce      json
-// @Param        input  body  input.UserQueryRequest  true  "查询参数"
-// @Success      200  {object}  http.BaseResponse[[]model.User]  "成功响应"
+// @Param        input  body  input.IssuerQueryInput  true  "查询参数"
+// @Success      200  {object}  http.BaseResponse[[]model.Issuer]  "成功响应"
 // @Failure      400  {object}  http.BaseResponse[any]  "参数错误"
 // @Failure      500  {object}  http.BaseResponse[any]  "内部错误"
 // @Router       /api/issuer/query [post]

@@ -9,9 +9,9 @@
     "host": "localhost:8080",
     "basePath": "/api",
     "paths": {
-        "/api/user/add": {
+        "/api/customer/add": {
             "post": {
-                "description": "添加用户信息",
+                "description": "添加客户信息",
                 "consumes": [
                     "application/json"
                 ],
@@ -19,17 +19,17 @@
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Customer"
                 ],
-                "summary": "用户添加接口",
+                "summary": "客户添加接口",
                 "parameters": [
                     {
                         "description": "添加参数",
-                        "name": "request",
+                        "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UserAddRequest"
+                            "$ref": "#/definitions/input.CustomerAddInput"
                         }
                     }
                 ],
@@ -37,7 +37,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/http.BaseResponse-do_User"
+                            "$ref": "#/definitions/http.BaseResponse-model_Customer"
                         }
                     },
                     "400": {
@@ -55,9 +55,9 @@
                 }
             }
         },
-        "/api/user/get": {
+        "/api/customer/get": {
             "get": {
-                "description": "通过用户ID查询用户详情",
+                "description": "通过ID查询信息详情",
                 "consumes": [
                     "application/json"
                 ],
@@ -65,13 +65,13 @@
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Customer"
                 ],
-                "summary": "获取用户信息",
+                "summary": "获取客户信息",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "用户ID",
+                        "description": "ID",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -81,7 +81,143 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/http.BaseResponse-do_User"
+                            "$ref": "#/definitions/http.BaseResponse-model_Customer"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    },
+                    "404": {
+                        "description": "不存在",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/customer/query": {
+            "post": {
+                "description": "分页查询客户列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Customer"
+                ],
+                "summary": "客户查询接口",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/input.CustomerQueryInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-array_model_Customer"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/issuer/add": {
+            "post": {
+                "description": "添加签发机构信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Issuer"
+                ],
+                "summary": "签发机构添加接口",
+                "parameters": [
+                    {
+                        "description": "添加参数",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/input.IssuerAddInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-model_Issuer"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/issuer/get": {
+            "get": {
+                "description": "通过ID查询信息详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Issuer"
+                ],
+                "summary": "获取签发机构信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "产品ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-model_Issuer"
                         }
                     },
                     "400": {
@@ -99,9 +235,9 @@
                 }
             }
         },
-        "/api/user/query": {
+        "/api/issuer/query": {
             "post": {
-                "description": "分页查询用户列表",
+                "description": "分页查询签发机构列表",
                 "consumes": [
                     "application/json"
                 ],
@@ -109,17 +245,17 @@
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Issuer"
                 ],
-                "summary": "用户查询接口",
+                "summary": "签发机构查询接口",
                 "parameters": [
                     {
                         "description": "查询参数",
-                        "name": "request",
+                        "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UserQueryRequest"
+                            "$ref": "#/definitions/input.IssuerQueryInput"
                         }
                     }
                 ],
@@ -127,7 +263,279 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/http.BaseResponse-array_do_User"
+                            "$ref": "#/definitions/http.BaseResponse-array_model_Issuer"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/license/add": {
+            "post": {
+                "description": "添加许可证信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "License"
+                ],
+                "summary": "许可证添加接口",
+                "parameters": [
+                    {
+                        "description": "添加参数",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/input.LicenseAddInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-model_License"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/license/get": {
+            "get": {
+                "description": "通过ID查询信息详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "License"
+                ],
+                "summary": "获取许可证信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "产品ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-model_License"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    },
+                    "404": {
+                        "description": "用户不存在",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/license/query": {
+            "post": {
+                "description": "分页查询许可证列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "License"
+                ],
+                "summary": "许可证查询接口",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/input.LicenseQueryInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-array_model_License"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/product/add": {
+            "post": {
+                "description": "添加产品信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "产品添加接口",
+                "parameters": [
+                    {
+                        "description": "添加参数",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/input.ProductAddInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-model_Product"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/product/get": {
+            "get": {
+                "description": "通过ID查询信息详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "获取产品信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "产品ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-model_Product"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    },
+                    "404": {
+                        "description": "用户不存在",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/product/query": {
+            "post": {
+                "description": "分页查询产品列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "产品查询接口",
+                "parameters": [
+                    {
+                        "description": "查询参数",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/input.ProductQueryInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/http.BaseResponse-array_model_Product"
                         }
                     },
                     "400": {
@@ -147,36 +555,6 @@
         }
     },
     "definitions": {
-        "do.User": {
-            "type": "object",
-            "properties": {
-                "client_id": {
-                    "description": "客户端ID",
-                    "type": "string",
-                    "example": "xasdfsdf"
-                },
-                "email": {
-                    "description": "用户邮箱",
-                    "type": "string",
-                    "example": "bill@126.com"
-                },
-                "id": {
-                    "description": "用户ID",
-                    "type": "integer",
-                    "example": 1
-                },
-                "name": {
-                    "description": "用户名称",
-                    "type": "string",
-                    "example": "bill"
-                },
-                "password": {
-                    "description": "用户密码",
-                    "type": "string",
-                    "example": "xlasiefska"
-                }
-            }
-        },
         "http.BaseResponse-any": {
             "type": "object",
             "properties": {
@@ -195,7 +573,7 @@
                 }
             }
         },
-        "http.BaseResponse-array_do_User": {
+        "http.BaseResponse-array_model_Customer": {
             "type": "object",
             "properties": {
                 "code": {
@@ -207,7 +585,7 @@
                     "description": "实际数据",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/do.User"
+                        "$ref": "#/definitions/model.Customer"
                     }
                 },
                 "message": {
@@ -217,7 +595,73 @@
                 }
             }
         },
-        "http.BaseResponse-do_User": {
+        "http.BaseResponse-array_model_Issuer": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer",
+                    "example": 0
+                },
+                "data": {
+                    "description": "实际数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Issuer"
+                    }
+                },
+                "message": {
+                    "description": "消息",
+                    "type": "string",
+                    "example": "ok"
+                }
+            }
+        },
+        "http.BaseResponse-array_model_License": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer",
+                    "example": 0
+                },
+                "data": {
+                    "description": "实际数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.License"
+                    }
+                },
+                "message": {
+                    "description": "消息",
+                    "type": "string",
+                    "example": "ok"
+                }
+            }
+        },
+        "http.BaseResponse-array_model_Product": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer",
+                    "example": 0
+                },
+                "data": {
+                    "description": "实际数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Product"
+                    }
+                },
+                "message": {
+                    "description": "消息",
+                    "type": "string",
+                    "example": "ok"
+                }
+            }
+        },
+        "http.BaseResponse-model_Customer": {
             "type": "object",
             "properties": {
                 "code": {
@@ -229,7 +673,7 @@
                     "description": "实际数据",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/do.User"
+                            "$ref": "#/definitions/model.Customer"
                         }
                     ]
                 },
@@ -240,38 +684,123 @@
                 }
             }
         },
-        "request.UserAddRequest": {
+        "http.BaseResponse-model_Issuer": {
             "type": "object",
-            "required": [
-                "email",
-                "name",
-                "password"
-            ],
             "properties": {
-                "email": {
-                    "description": "用户邮箱",
-                    "type": "string",
-                    "example": "bill@126.com"
+                "code": {
+                    "description": "状态码",
+                    "type": "integer",
+                    "example": 0
                 },
-                "name": {
-                    "description": "用户名称",
-                    "type": "string",
-                    "example": "bill"
+                "data": {
+                    "description": "实际数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Issuer"
+                        }
+                    ]
                 },
-                "password": {
-                    "description": "用户密码",
+                "message": {
+                    "description": "消息",
                     "type": "string",
-                    "example": "111111"
+                    "example": "ok"
                 }
             }
         },
-        "request.UserQueryRequest": {
+        "http.BaseResponse-model_License": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer",
+                    "example": 0
+                },
+                "data": {
+                    "description": "实际数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.License"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "消息",
+                    "type": "string",
+                    "example": "ok"
+                }
+            }
+        },
+        "http.BaseResponse-model_Product": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer",
+                    "example": 0
+                },
+                "data": {
+                    "description": "实际数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Product"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "消息",
+                    "type": "string",
+                    "example": "ok"
+                }
+            }
+        },
+        "input.CustomerAddInput": {
+            "type": "object",
+            "required": [
+                "code",
+                "name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "Customer-add-address"
+                },
+                "code": {
+                    "type": "string",
+                    "example": "Customer-add-code"
+                },
+                "contact": {
+                    "type": "string",
+                    "example": "Customer-add-contact"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "Customer-add-email"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Customer-a"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "Customer-add-phone"
+                }
+            }
+        },
+        "input.CustomerQueryInput": {
             "type": "object",
             "required": [
                 "page",
                 "size"
             ],
             "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "customer-a"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Customer-a"
+                },
                 "page": {
                     "description": "页码，从1开始",
                     "type": "integer",
@@ -281,6 +810,380 @@
                     "description": "每页数量",
                     "type": "integer",
                     "example": 10
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "input.IssuerAddInput": {
+            "type": "object",
+            "required": [
+                "code",
+                "description",
+                "name"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "Issuer-add-code"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Issuer-add-description"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Issuer-a"
+                }
+            }
+        },
+        "input.IssuerQueryInput": {
+            "type": "object",
+            "required": [
+                "page",
+                "size"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "customer-a"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Issuer-a"
+                },
+                "page": {
+                    "description": "页码，从1开始",
+                    "type": "integer",
+                    "example": 1
+                },
+                "size": {
+                    "description": "每页数量",
+                    "type": "integer",
+                    "example": 10
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "input.LicenseAddInput": {
+            "type": "object"
+        },
+        "input.LicenseQueryInput": {
+            "type": "object",
+            "required": [
+                "page",
+                "size"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "customer-a"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "License-a"
+                },
+                "page": {
+                    "description": "页码，从1开始",
+                    "type": "integer",
+                    "example": 1
+                },
+                "size": {
+                    "description": "每页数量",
+                    "type": "integer",
+                    "example": 10
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "input.ProductAddInput": {
+            "type": "object",
+            "required": [
+                "code",
+                "description",
+                "name"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "product-add-code"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "product-add-description"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "product-a"
+                }
+            }
+        },
+        "input.ProductQueryInput": {
+            "type": "object",
+            "required": [
+                "page",
+                "size"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "customer-a"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "product-a"
+                },
+                "page": {
+                    "description": "页码，从1开始",
+                    "type": "integer",
+                    "example": 1
+                },
+                "size": {
+                    "description": "每页数量",
+                    "type": "integer",
+                    "example": 10
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "model.Customer": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "联系电话",
+                    "type": "string",
+                    "example": "北京"
+                },
+                "code": {
+                    "description": "代码, 唯一标识",
+                    "type": "string",
+                    "example": "customer-a"
+                },
+                "contact": {
+                    "description": "联系人",
+                    "type": "string",
+                    "example": "联系人-A"
+                },
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string",
+                    "example": "2020-10-11T10:10:10"
+                },
+                "email": {
+                    "description": "联系电话",
+                    "type": "string",
+                    "example": "134@126.com"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string",
+                    "example": "客户-A"
+                },
+                "phone": {
+                    "description": "联系电话",
+                    "type": "string",
+                    "example": "13433332222"
+                },
+                "status": {
+                    "description": "状态: 1启用, 0禁用",
+                    "type": "integer",
+                    "example": 1
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string",
+                    "example": "2020-10-11T10:10:10"
+                }
+            }
+        },
+        "model.Issuer": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "代码, 唯一标识",
+                    "type": "string",
+                    "example": "issuer-a-code"
+                },
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string",
+                    "example": "2020-10-11T10:10:10"
+                },
+                "description": {
+                    "description": "描述",
+                    "type": "string",
+                    "example": "issuer-a-description"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "key_algorithm": {
+                    "description": "加密算法",
+                    "type": "string",
+                    "example": "xxx"
+                },
+                "key_size": {
+                    "description": "密钥长度",
+                    "type": "integer",
+                    "example": 10
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string",
+                    "example": "issuer-a"
+                },
+                "private_key": {
+                    "description": "私钥",
+                    "type": "string",
+                    "example": "xxx"
+                },
+                "public_key": {
+                    "description": "公钥",
+                    "type": "string",
+                    "example": "xxx"
+                },
+                "status": {
+                    "description": "状态: 1启用, 0禁用",
+                    "type": "integer",
+                    "example": 1
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string",
+                    "example": "2020-10-11T10:10:10"
+                }
+            }
+        },
+        "model.License": {
+            "type": "object",
+            "properties": {
+                "activation_code": {
+                    "description": "激活码(Base64 URL安全编码)",
+                    "type": "string",
+                    "example": "xxxx-zzzz"
+                },
+                "code": {
+                    "description": "代码, 唯一标识",
+                    "type": "string",
+                    "example": "license-a"
+                },
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string",
+                    "example": "2020-10-11T10:10:10"
+                },
+                "customer_id": {
+                    "description": "客户ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "expire_at": {
+                    "description": "到期日期",
+                    "type": "string",
+                    "example": "2020-10-11T10:10:10"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "issue_at": {
+                    "description": "签发日期",
+                    "type": "string",
+                    "example": "2020-10-11T10:10:10"
+                },
+                "issuer_id": {
+                    "description": "客户ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "max_instances": {
+                    "description": "最大实例数, -1 表示无限",
+                    "type": "integer",
+                    "example": -1
+                },
+                "modules": {
+                    "description": "授权模块",
+                    "type": "string",
+                    "example": "order"
+                },
+                "product_id": {
+                    "description": "产品ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "remarks": {
+                    "description": "备注",
+                    "type": "string",
+                    "example": "备注"
+                },
+                "status": {
+                    "description": "状态: 1启用, 0禁用",
+                    "type": "integer",
+                    "example": 1
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string",
+                    "example": "2020-10-11T10:10:10"
+                }
+            }
+        },
+        "model.Product": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "产品代码, 唯一标识",
+                    "type": "string",
+                    "example": "platform"
+                },
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string",
+                    "example": "2020-10-11T10:10:10"
+                },
+                "description": {
+                    "description": "用户密码",
+                    "type": "string",
+                    "example": "运营平台描述"
+                },
+                "id": {
+                    "description": "产品ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "description": "产品名称",
+                    "type": "string",
+                    "example": "运营平台"
+                },
+                "status": {
+                    "description": "状态: 1启用, 0禁用",
+                    "type": "integer",
+                    "example": 1
+                },
+                "updated_at": {
+                    "description": "更新时间",
+                    "type": "string",
+                    "example": "2020-10-11T10:10:10"
                 }
             }
         }

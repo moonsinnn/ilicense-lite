@@ -5,6 +5,7 @@ import (
 )
 
 func Init(r *gin.Engine) {
+	DocsRouterInit(r)
 	MetricRouterInit(r)
 	ProductRouterInit(r)
 	CustomerRouterInit(r)

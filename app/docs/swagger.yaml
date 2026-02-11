@@ -1,28 +1,5 @@
 basePath: /api
 definitions:
-  do.User:
-    properties:
-      client_id:
-        description: 客户端ID
-        example: xasdfsdf
-        type: string
-      email:
-        description: 用户邮箱
-        example: bill@126.com
-        type: string
-      id:
-        description: 用户ID
-        example: 1
-        type: integer
-      name:
-        description: 用户名称
-        example: bill
-        type: string
-      password:
-        description: 用户密码
-        example: xlasiefska
-        type: string
-    type: object
   http.BaseResponse-any:
     properties:
       code:
@@ -36,7 +13,7 @@ definitions:
         example: ok
         type: string
     type: object
-  http.BaseResponse-array_do_User:
+  http.BaseResponse-array_model_Customer:
     properties:
       code:
         description: 状态码
@@ -45,14 +22,62 @@ definitions:
       data:
         description: 实际数据
         items:
-          $ref: '#/definitions/do.User'
+          $ref: '#/definitions/model.Customer'
         type: array
       message:
         description: 消息
         example: ok
         type: string
     type: object
-  http.BaseResponse-do_User:
+  http.BaseResponse-array_model_Issuer:
+    properties:
+      code:
+        description: 状态码
+        example: 0
+        type: integer
+      data:
+        description: 实际数据
+        items:
+          $ref: '#/definitions/model.Issuer'
+        type: array
+      message:
+        description: 消息
+        example: ok
+        type: string
+    type: object
+  http.BaseResponse-array_model_License:
+    properties:
+      code:
+        description: 状态码
+        example: 0
+        type: integer
+      data:
+        description: 实际数据
+        items:
+          $ref: '#/definitions/model.License'
+        type: array
+      message:
+        description: 消息
+        example: ok
+        type: string
+    type: object
+  http.BaseResponse-array_model_Product:
+    properties:
+      code:
+        description: 状态码
+        example: 0
+        type: integer
+      data:
+        description: 实际数据
+        items:
+          $ref: '#/definitions/model.Product'
+        type: array
+      message:
+        description: 消息
+        example: ok
+        type: string
+    type: object
+  http.BaseResponse-model_Customer:
     properties:
       code:
         description: 状态码
@@ -60,34 +85,90 @@ definitions:
         type: integer
       data:
         allOf:
-        - $ref: '#/definitions/do.User'
+        - $ref: '#/definitions/model.Customer'
         description: 实际数据
       message:
         description: 消息
         example: ok
         type: string
     type: object
-  request.UserAddRequest:
+  http.BaseResponse-model_Issuer:
     properties:
+      code:
+        description: 状态码
+        example: 0
+        type: integer
+      data:
+        allOf:
+        - $ref: '#/definitions/model.Issuer'
+        description: 实际数据
+      message:
+        description: 消息
+        example: ok
+        type: string
+    type: object
+  http.BaseResponse-model_License:
+    properties:
+      code:
+        description: 状态码
+        example: 0
+        type: integer
+      data:
+        allOf:
+        - $ref: '#/definitions/model.License'
+        description: 实际数据
+      message:
+        description: 消息
+        example: ok
+        type: string
+    type: object
+  http.BaseResponse-model_Product:
+    properties:
+      code:
+        description: 状态码
+        example: 0
+        type: integer
+      data:
+        allOf:
+        - $ref: '#/definitions/model.Product'
+        description: 实际数据
+      message:
+        description: 消息
+        example: ok
+        type: string
+    type: object
+  input.CustomerAddInput:
+    properties:
+      address:
+        example: Customer-add-address
+        type: string
+      code:
+        example: Customer-add-code
+        type: string
+      contact:
+        example: Customer-add-contact
+        type: string
       email:
-        description: 用户邮箱
-        example: bill@126.com
+        example: Customer-add-email
         type: string
       name:
-        description: 用户名称
-        example: bill
+        example: Customer-a
         type: string
-      password:
-        description: 用户密码
-        example: "111111"
+      phone:
+        example: Customer-add-phone
         type: string
     required:
-    - email
+    - code
     - name
-    - password
     type: object
-  request.UserQueryRequest:
+  input.CustomerQueryInput:
     properties:
+      code:
+        example: customer-a
+        type: string
+      name:
+        example: Customer-a
+        type: string
       page:
         description: 页码，从1开始
         example: 1
@@ -96,9 +177,295 @@ definitions:
         description: 每页数量
         example: 10
         type: integer
+      status:
+        example: 1
+        type: integer
     required:
     - page
     - size
+    type: object
+  input.IssuerAddInput:
+    properties:
+      code:
+        example: Issuer-add-code
+        type: string
+      description:
+        example: Issuer-add-description
+        type: string
+      name:
+        example: Issuer-a
+        type: string
+    required:
+    - code
+    - description
+    - name
+    type: object
+  input.IssuerQueryInput:
+    properties:
+      code:
+        example: customer-a
+        type: string
+      name:
+        example: Issuer-a
+        type: string
+      page:
+        description: 页码，从1开始
+        example: 1
+        type: integer
+      size:
+        description: 每页数量
+        example: 10
+        type: integer
+      status:
+        example: 1
+        type: integer
+    required:
+    - page
+    - size
+    type: object
+  input.LicenseAddInput:
+    type: object
+  input.LicenseQueryInput:
+    properties:
+      code:
+        example: customer-a
+        type: string
+      name:
+        example: License-a
+        type: string
+      page:
+        description: 页码，从1开始
+        example: 1
+        type: integer
+      size:
+        description: 每页数量
+        example: 10
+        type: integer
+      status:
+        example: 1
+        type: integer
+    required:
+    - page
+    - size
+    type: object
+  input.ProductAddInput:
+    properties:
+      code:
+        example: product-add-code
+        type: string
+      description:
+        example: product-add-description
+        type: string
+      name:
+        example: product-a
+        type: string
+    required:
+    - code
+    - description
+    - name
+    type: object
+  input.ProductQueryInput:
+    properties:
+      code:
+        example: customer-a
+        type: string
+      name:
+        example: product-a
+        type: string
+      page:
+        description: 页码，从1开始
+        example: 1
+        type: integer
+      size:
+        description: 每页数量
+        example: 10
+        type: integer
+      status:
+        example: 1
+        type: integer
+    required:
+    - page
+    - size
+    type: object
+  model.Customer:
+    properties:
+      address:
+        description: 联系电话
+        example: 北京
+        type: string
+      code:
+        description: 代码, 唯一标识
+        example: customer-a
+        type: string
+      contact:
+        description: 联系人
+        example: 联系人-A
+        type: string
+      created_at:
+        description: 创建时间
+        example: 2020-10-11T10:10:10
+        type: string
+      email:
+        description: 联系电话
+        example: 134@126.com
+        type: string
+      id:
+        description: ID
+        example: 1
+        type: integer
+      name:
+        description: 名称
+        example: 客户-A
+        type: string
+      phone:
+        description: 联系电话
+        example: "13433332222"
+        type: string
+      status:
+        description: '状态: 1启用, 0禁用'
+        example: 1
+        type: integer
+      updated_at:
+        description: 更新时间
+        example: 2020-10-11T10:10:10
+        type: string
+    type: object
+  model.Issuer:
+    properties:
+      code:
+        description: 代码, 唯一标识
+        example: issuer-a-code
+        type: string
+      created_at:
+        description: 创建时间
+        example: 2020-10-11T10:10:10
+        type: string
+      description:
+        description: 描述
+        example: issuer-a-description
+        type: string
+      id:
+        description: ID
+        example: 1
+        type: integer
+      key_algorithm:
+        description: 加密算法
+        example: xxx
+        type: string
+      key_size:
+        description: 密钥长度
+        example: 10
+        type: integer
+      name:
+        description: 名称
+        example: issuer-a
+        type: string
+      private_key:
+        description: 私钥
+        example: xxx
+        type: string
+      public_key:
+        description: 公钥
+        example: xxx
+        type: string
+      status:
+        description: '状态: 1启用, 0禁用'
+        example: 1
+        type: integer
+      updated_at:
+        description: 更新时间
+        example: 2020-10-11T10:10:10
+        type: string
+    type: object
+  model.License:
+    properties:
+      activation_code:
+        description: 激活码(Base64 URL安全编码)
+        example: xxxx-zzzz
+        type: string
+      code:
+        description: 代码, 唯一标识
+        example: license-a
+        type: string
+      created_at:
+        description: 创建时间
+        example: 2020-10-11T10:10:10
+        type: string
+      customer_id:
+        description: 客户ID
+        example: 1
+        type: integer
+      expire_at:
+        description: 到期日期
+        example: 2020-10-11T10:10:10
+        type: string
+      id:
+        description: ID
+        example: 1
+        type: integer
+      issue_at:
+        description: 签发日期
+        example: 2020-10-11T10:10:10
+        type: string
+      issuer_id:
+        description: 客户ID
+        example: 1
+        type: integer
+      max_instances:
+        description: 最大实例数, -1 表示无限
+        example: -1
+        type: integer
+      modules:
+        description: 授权模块
+        example: order
+        type: string
+      product_id:
+        description: 产品ID
+        example: 1
+        type: integer
+      remarks:
+        description: 备注
+        example: 备注
+        type: string
+      status:
+        description: '状态: 1启用, 0禁用'
+        example: 1
+        type: integer
+      updated_at:
+        description: 更新时间
+        example: 2020-10-11T10:10:10
+        type: string
+    type: object
+  model.Product:
+    properties:
+      code:
+        description: 产品代码, 唯一标识
+        example: platform
+        type: string
+      created_at:
+        description: 创建时间
+        example: 2020-10-11T10:10:10
+        type: string
+      description:
+        description: 用户密码
+        example: 运营平台描述
+        type: string
+      id:
+        description: 产品ID
+        example: 1
+        type: integer
+      name:
+        description: 产品名称
+        example: 运营平台
+        type: string
+      status:
+        description: '状态: 1启用, 0禁用'
+        example: 1
+        type: integer
+      updated_at:
+        description: 更新时间
+        example: 2020-10-11T10:10:10
+        type: string
     type: object
 host: localhost:8080
 info:
@@ -107,25 +474,25 @@ info:
   title: Gin App API
   version: "1.0"
 paths:
-  /api/user/add:
+  /api/customer/add:
     post:
       consumes:
       - application/json
-      description: 添加用户信息
+      description: 添加客户信息
       parameters:
       - description: 添加参数
         in: body
         name: input
         required: true
         schema:
-          $ref: '#/definitions/request.UserAddRequest'
+          $ref: '#/definitions/input.CustomerAddInput'
       produces:
       - application/json
       responses:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/http.BaseResponse-do_User'
+            $ref: '#/definitions/http.BaseResponse-model_Customer'
         "400":
           description: 参数错误
           schema:
@@ -134,16 +501,16 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/http.BaseResponse-any'
-      summary: 用户添加接口
+      summary: 客户添加接口
       tags:
-      - User
-  /api/user/get:
+      - Customer
+  /api/customer/get:
     get:
       consumes:
       - application/json
-      description: 通过用户ID查询用户详情
+      description: 通过ID查询信息详情
       parameters:
-      - description: 用户ID
+      - description: ID
         in: query
         name: id
         required: true
@@ -154,37 +521,37 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/http.BaseResponse-do_User'
+            $ref: '#/definitions/http.BaseResponse-model_Customer'
         "400":
           description: 参数错误
           schema:
             $ref: '#/definitions/http.BaseResponse-any'
         "404":
-          description: 用户不存在
+          description: 不存在
           schema:
             $ref: '#/definitions/http.BaseResponse-any'
-      summary: 获取用户信息
+      summary: 获取客户信息
       tags:
-      - User
-  /api/user/query:
+      - Customer
+  /api/customer/query:
     post:
       consumes:
       - application/json
-      description: 分页查询用户列表
+      description: 分页查询客户列表
       parameters:
       - description: 查询参数
         in: body
         name: input
         required: true
         schema:
-          $ref: '#/definitions/request.UserQueryRequest'
+          $ref: '#/definitions/input.CustomerQueryInput'
       produces:
       - application/json
       responses:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/http.BaseResponse-array_do_User'
+            $ref: '#/definitions/http.BaseResponse-array_model_Customer'
         "400":
           description: 参数错误
           schema:
@@ -193,7 +560,274 @@ paths:
           description: 内部错误
           schema:
             $ref: '#/definitions/http.BaseResponse-any'
-      summary: 用户查询接口
+      summary: 客户查询接口
       tags:
-      - User
+      - Customer
+  /api/issuer/add:
+    post:
+      consumes:
+      - application/json
+      description: 添加签发机构信息
+      parameters:
+      - description: 添加参数
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/input.IssuerAddInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/http.BaseResponse-model_Issuer'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+      summary: 签发机构添加接口
+      tags:
+      - Issuer
+  /api/issuer/get:
+    get:
+      consumes:
+      - application/json
+      description: 通过ID查询信息详情
+      parameters:
+      - description: 产品ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/http.BaseResponse-model_Issuer'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+        "404":
+          description: 用户不存在
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+      summary: 获取签发机构信息
+      tags:
+      - Issuer
+  /api/issuer/query:
+    post:
+      consumes:
+      - application/json
+      description: 分页查询签发机构列表
+      parameters:
+      - description: 查询参数
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/input.IssuerQueryInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/http.BaseResponse-array_model_Issuer'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+      summary: 签发机构查询接口
+      tags:
+      - Issuer
+  /api/license/add:
+    post:
+      consumes:
+      - application/json
+      description: 添加许可证信息
+      parameters:
+      - description: 添加参数
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/input.LicenseAddInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/http.BaseResponse-model_License'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+      summary: 许可证添加接口
+      tags:
+      - License
+  /api/license/get:
+    get:
+      consumes:
+      - application/json
+      description: 通过ID查询信息详情
+      parameters:
+      - description: 产品ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/http.BaseResponse-model_License'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+        "404":
+          description: 用户不存在
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+      summary: 获取许可证信息
+      tags:
+      - License
+  /api/license/query:
+    post:
+      consumes:
+      - application/json
+      description: 分页查询许可证列表
+      parameters:
+      - description: 查询参数
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/input.LicenseQueryInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/http.BaseResponse-array_model_License'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+      summary: 许可证查询接口
+      tags:
+      - License
+  /api/product/add:
+    post:
+      consumes:
+      - application/json
+      description: 添加产品信息
+      parameters:
+      - description: 添加参数
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/input.ProductAddInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/http.BaseResponse-model_Product'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+      summary: 产品添加接口
+      tags:
+      - Product
+  /api/product/get:
+    get:
+      consumes:
+      - application/json
+      description: 通过ID查询信息详情
+      parameters:
+      - description: 产品ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/http.BaseResponse-model_Product'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+        "404":
+          description: 用户不存在
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+      summary: 获取产品信息
+      tags:
+      - Product
+  /api/product/query:
+    post:
+      consumes:
+      - application/json
+      description: 分页查询产品列表
+      parameters:
+      - description: 查询参数
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/input.ProductQueryInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/http.BaseResponse-array_model_Product'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/http.BaseResponse-any'
+      summary: 产品查询接口
+      tags:
+      - Product
 swagger: "2.0"
