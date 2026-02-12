@@ -11,4 +11,6 @@ func IssuerRouterInit(e *gin.Engine) {
 	group.GET("/get", controller.IssuerGet)
 	group.POST("/add", controller.IssuerAdd)
 	group.POST("/query", controller.IssuerQuery)
+	group.POST("/delete/:id", controller.IssuerDeleteOne)
+	group.POST("/delete", controller.IssuerDelete)
 }

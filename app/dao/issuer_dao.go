@@ -27,6 +27,19 @@ func (*IssuerDao) IssuerGet(ctx context.Context, id uint64) (*model.Issuer, erro
 	}
 	return m, nil
 }
+
+func (*IssuerDao) IssuerDeleteOne(ctx context.Context, id uint64) error {
+	if err := client.MysqlDemo.WithContext(ctx).Delete(&model.Issuer{ID: id}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+func (*IssuerDao) IssuerDelete(ctx context.Context, ids []uint64) error {
+	if err := client.MysqlDemo.WithContext(ctx).Delete(&model.Issuer{}, ids).Error; err != nil {
+		return err
+	}
+	return nil
+}
 func (*IssuerDao) IssuerAdd(ctx context.Context, m *model.Issuer) error {
 	if err := client.MysqlDemo.WithContext(ctx).Create(m).Error; err != nil {
 		return err

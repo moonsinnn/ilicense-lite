@@ -8,7 +8,7 @@ import (
 func InitResource() (*resource.Resource, error) {
 	return resource.NewWithAttributes(
 		semconv.SchemaURL,
-		semconv.ServiceNameKey.String("gin-app"),
+		semconv.ServiceNameKey.String("ilicense-lite"),
 		semconv.ServiceVersionKey.String("1.0"),
 		semconv.DeploymentEnvironmentKey.String("dev"),
 		semconv.CloudRegionKey.String("zh-cn"),

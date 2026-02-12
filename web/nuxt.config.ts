@@ -2,20 +2,30 @@
 export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
-    '@nuxt/ui'
+    '@nuxt/ui',
+    '@vueuse/nuxt'
   ],
-
   devtools: {
     enabled: true
   },
 
   css: ['~/assets/css/main.css'],
 
-  routeRules: {
-    '/': { prerender: true }
+  ui: {
+    fonts: false
   },
 
-  compatibilityDate: '2025-01-15',
+  runtimeConfig: {
+    apiBase: 'http://127.0.0.1:8080'
+  },
+
+  routeRules: {
+    '/api/**': {
+      cors: true
+    }
+  },
+
+  compatibilityDate: '2024-07-11',
 
   eslint: {
     config: {

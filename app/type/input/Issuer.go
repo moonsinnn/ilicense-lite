@@ -4,6 +4,12 @@ type (
 	IssuerGetInput struct {
 		ID uint64 `form:"id"`
 	}
+	IssuerDeleteOneInput struct {
+		ID uint64 `uri:"id" binding:"required"`
+	}
+	IssuerDeleteInput struct {
+		IDs []uint64 `json:"ids" binding:"required"`
+	}
 	IssuerAddInput struct {
 		Code        string `json:"code" form:"code" binding:"required" example:"Issuer-add-code"`
 		Name        string `json:"name" form:"name" binding:"required" example:"Issuer-a"`

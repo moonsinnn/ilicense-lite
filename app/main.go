@@ -27,7 +27,7 @@ func main() {
 	flag.Parse()
 	bootstrap.Init(*file)
 	r := gin.New()
-	r.Use(otelgin.Middleware("gin-app"))
+	r.Use(otelgin.Middleware("ilicense-lite"))
 	r.Use(middleware.MetricsMiddleware())
 	r.Use(middleware.PrometheusMiddleware())
 	r.Use(gin.Logger())

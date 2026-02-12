@@ -30,6 +30,12 @@ func (this *IssuerService) IssuerGet(ctx context.Context, in *input.IssuerGetInp
 	return this.IssuerDao.IssuerGet(ctx, in.ID)
 }
 
+func (this *IssuerService) IssuerDeleteOne(ctx context.Context, in *input.IssuerDeleteOneInput) error {
+	return this.IssuerDao.IssuerDeleteOne(ctx, in.ID)
+}
+func (this *IssuerService) IssuerDelete(ctx context.Context, in *input.IssuerDeleteInput) error {
+	return this.IssuerDao.IssuerDelete(ctx, in.IDs)
+}
 func (this *IssuerService) IssuerAdd(ctx context.Context, in *input.IssuerAddInput) (interface{}, error) {
 	// 1. 生成 RSA 2048 密钥对
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
