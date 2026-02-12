@@ -26,6 +26,18 @@ func (*CustomerDao) CustomerGet(ctx context.Context, id uint64) (*model.Customer
 	}
 	return m, nil
 }
+func (*CustomerDao) CustomerDeleteOne(ctx context.Context, id uint64) error {
+	if err := client.MysqlDemo.WithContext(ctx).Delete(&model.Customer{ID: id}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+func (*CustomerDao) CustomerDelete(ctx context.Context, ids []uint64) error {
+	if err := client.MysqlDemo.WithContext(ctx).Delete(&model.Customer{}, ids).Error; err != nil {
+		return err
+	}
+	return nil
+}
 func (*CustomerDao) CustomerAdd(ctx context.Context, m *model.Customer) error {
 	if err := client.MysqlDemo.WithContext(ctx).Create(m).Error; err != nil {
 		return err

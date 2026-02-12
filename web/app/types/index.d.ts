@@ -5,19 +5,6 @@ export type { Issuer } from '~/types/issuer'
 export type UserStatus = 'subscribed' | 'unsubscribed' | 'bounced'
 export type SaleStatus = 'paid' | 'failed' | 'refunded'
 
-export interface Product {
-  id: number
-  code: string
-  name: string
-  contact: string
-  phone: string
-  email: string
-  address: string
-  status: number
-  created_at: string
-  updated_at: string
-}
-
 export interface User {
   id: number
   name: string

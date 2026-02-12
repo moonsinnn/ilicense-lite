@@ -32,7 +32,18 @@ func (*LicenseDao) LicenseAdd(ctx context.Context, m *model.License) error {
 	}
 	return nil
 }
-
+func (*LicenseDao) LicenseDeleteOne(ctx context.Context, id uint64) error {
+	if err := client.MysqlDemo.WithContext(ctx).Delete(&model.License{ID: id}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+func (*LicenseDao) LicenseDelete(ctx context.Context, ids []uint64) error {
+	if err := client.MysqlDemo.WithContext(ctx).Delete(&model.License{}, ids).Error; err != nil {
+		return err
+	}
+	return nil
+}
 func (*LicenseDao) LicenseList(ctx context.Context) ([]model.License, error) {
 	var items []model.License
 	if err := client.MysqlDemo.WithContext(ctx).Find(&items).Error; err != nil {

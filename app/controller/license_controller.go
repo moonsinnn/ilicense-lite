@@ -62,6 +62,54 @@ func LicenseAdd(ctx *gin.Context) {
 	http.JsonResponse(ctx, result)
 }
 
+// LicenseDeleteOne
+// @Summary      删除许可证信息
+// @Description  通过ID删除数据
+// @Tags         License
+// @Accept       json
+// @Produce      json
+// @Param        id  query  int  true  "ID"
+// @Success      200  {object}  http.BaseResponse[model.License]  "成功响应"
+// @Failure      400  {object}  http.BaseResponse[any]      "参数错误"
+// @Failure      404  {object}  http.BaseResponse[any]      "用户不存在"
+// @Router       /api/license/delete/:id [post]
+func LicenseDeleteOne(ctx *gin.Context) {
+	var in input.LicenseDeleteOneInput
+	if err := ctx.ShouldBindUri(&in); err != nil {
+		http.JsonResponse(ctx, err)
+		return
+	}
+	if err := licenseService.LicenseDeleteOne(ctx.Request.Context(), &in); err != nil {
+		http.JsonResponse(ctx, err)
+		return
+	}
+	http.JsonResponse(ctx, nil)
+}
+
+// LicenseDelete
+// @Summary      删除许可证信息
+// @Description  通过ID列表删除数据
+// @Tags         License
+// @Accept       json
+// @Produce      json
+// @Param        id  query  int  true  "ID"
+// @Success      200  {object}  http.BaseResponse[model.License]  "成功响应"
+// @Failure      400  {object}  http.BaseResponse[any]      "参数错误"
+// @Failure      404  {object}  http.BaseResponse[any]      "用户不存在"
+// @Router       /api/license/delete [post]
+func LicenseDelete(ctx *gin.Context) {
+	var in input.LicenseDeleteInput
+	if err := ctx.ShouldBindJSON(&in); err != nil {
+		http.JsonResponse(ctx, err)
+		return
+	}
+	if err := licenseService.LicenseDelete(ctx.Request.Context(), &in); err != nil {
+		http.JsonResponse(ctx, err)
+		return
+	}
+	http.JsonResponse(ctx, nil)
+}
+
 // LicenseQuery
 // @Summary      许可证查询接口
 // @Description  分页查询许可证列表

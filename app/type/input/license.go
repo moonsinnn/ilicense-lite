@@ -30,4 +30,10 @@ type (
 		ExpireAt string `json:"expire_at" form:"expire_at" binding:"required" example:"2026-03-10 11:05:35"`
 		Remarks  string `json:"remarks" form:"remarks" example:"remark"`
 	}
+	LicenseDeleteInput struct {
+		IDs []uint64 `json:"ids" binding:"required"`
+	}
+	LicenseDeleteOneInput struct {
+		ID uint64 `uri:"id" binding:"required"`
+	}
 )

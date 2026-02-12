@@ -37,7 +37,12 @@ func NewLicenseService() *LicenseService {
 		customerDao: dao.NewCustomerDao(),
 	}
 }
-
+func (this *LicenseService) LicenseDeleteOne(ctx context.Context, in *input.LicenseDeleteOneInput) error {
+	return this.licenseDao.LicenseDeleteOne(ctx, in.ID)
+}
+func (this *LicenseService) LicenseDelete(ctx context.Context, in *input.LicenseDeleteInput) error {
+	return this.licenseDao.LicenseDelete(ctx, in.IDs)
+}
 func (this *LicenseService) LicenseGet(ctx context.Context, in *input.LicenseGetInput) (interface{}, error) {
 	logger.ServiceLogger.WithContext(ctx).Infof("********%+v", "test")
 	return this.licenseDao.LicenseGet(ctx, in.ID)
@@ -57,6 +62,7 @@ func (this *LicenseService) LicenseAdd(ctx context.Context, in *input.LicenseAdd
 		Code:         in.Code,
 		ProductID:    in.ProductID,
 		CustomerID:   in.CustomerID,
+		IssuerID:     in.IssuerID,
 		IssueAt:      time.Now(),
 		ExpireAt:     expireAtTime,
 		Modules:      in.Modules,

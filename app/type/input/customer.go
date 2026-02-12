@@ -19,4 +19,10 @@ type (
 		Code   string `form:"code" json:"code" example:"customer-a"`
 		Status *uint8 `form:"status" json:"status" example:"1"`
 	}
+	CustomerDeleteInput struct {
+		IDs []uint64 `json:"ids" binding:"required"`
+	}
+	CustomerDeleteOneInput struct {
+		ID uint64 `uri:"id" binding:"required"`
+	}
 )

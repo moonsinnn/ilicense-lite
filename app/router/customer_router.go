@@ -11,4 +11,6 @@ func CustomerRouterInit(e *gin.Engine) {
 	group.GET("/get", controller.CustomerGet)
 	group.POST("/add", controller.CustomerAdd)
 	group.POST("/query", controller.CustomerQuery)
+	group.POST("/delete", controller.CustomerDelete)
+	group.POST("/delete/:id", controller.CustomerDeleteOne)
 }

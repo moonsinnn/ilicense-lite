@@ -1,76 +1,123 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
 import { upperFirst } from 'scule'
-import { getPaginationRowModel } from '@tanstack/table-core'
-import type { Row } from '@tanstack/table-core'
-import type { User } from '~/types'
+import type { Row, Table as TanStackTable } from '@tanstack/table-core'
+import type { ApiMessageResponse, ApiResponse } from '~/types/api'
+import type { Customer, CustomerQueryData } from '~/types/customer'
+import dayjs from 'dayjs'
 
-const UAvatar = resolveComponent('UAvatar')
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 const UCheckbox = resolveComponent('UCheckbox')
 
 const toast = useToast()
-const table = useTemplateRef('table')
+const table = useTemplateRef<{ tableApi?: TanStackTable<Customer> }>('table')
 
 const columnFilters = ref([{
   id: 'email',
   value: ''
 }])
 const columnVisibility = ref()
-const rowSelection = ref({ 1: true })
+const rowSelection = ref<Record<string, boolean>>({})
 
-const { data, status } = await useFetch<User[]>('/api/customer', {
+const pagination = ref({
+  pageIndex: 0,
+  pageSize: 10
+})
+
+const requestBody = computed(() => ({
+  page: pagination.value.pageIndex + 1,
+  size: pagination.value.pageSize
+}))
+
+const { data, status } = await useFetch<ApiResponse<CustomerQueryData>>('/api/customer/query', {
+  key: 'customer-query',
+  method: 'POST',
+  body: requestBody,
+  watch: [requestBody],
+  default: () => ({
+    code: 0,
+    message: 'ok',
+    data: {
+      total: 0,
+      items: []
+    }
+  }),
   lazy: true
 })
 
-function getRowItems(row: Row<User>) {
+const tableData = computed(() => data.value?.data?.items || [])
+const total = computed(() => data.value?.data?.total || 0)
+const selectedRows = computed<Row<Customer>[]>(() => table.value?.tableApi?.getFilteredSelectedRowModel().rows || [])
+const selectedIds = computed<number[]>(() => selectedRows.value.map((row: Row<Customer>) => row.original.id))
+const selectedCount = computed<number>(() => selectedIds.value.length)
+const singleDeleteOpen = ref(false)
+const singleDeleteLoading = ref(false)
+const singleDeleteCustomer = ref<{ id: number, name: string } | null>(null)
+
+function requestDeleteOneCustomer(row: Row<Customer>) {
+  singleDeleteCustomer.value = {
+    id: row.original.id,
+    name: row.original.name
+  }
+  singleDeleteOpen.value = true
+}
+
+async function confirmDeleteOneCustomer() {
+  if (!singleDeleteCustomer.value || singleDeleteLoading.value) return
+
+  try {
+    singleDeleteLoading.value = true
+    const response = await $fetch<ApiMessageResponse>(`/api/customer/delete/${singleDeleteCustomer.value.id}`, {
+      method: 'POST'
+    })
+
+    if (response.code !== 0) {
+      throw new Error(response.message || '删除失败')
+    }
+
+    toast.add({
+      title: '删除成功',
+      description: `客户 ${singleDeleteCustomer.value.name} 已删除`,
+      color: 'success'
+    })
+    singleDeleteOpen.value = false
+    singleDeleteCustomer.value = null
+    rowSelection.value = {}
+    await refreshNuxtData('customer-query')
+  } catch (error) {
+    toast.add({
+      title: '删除失败',
+      description: error instanceof Error ? error.message : '请求失败，请稍后重试',
+      color: 'error'
+    })
+  } finally {
+    singleDeleteLoading.value = false
+  }
+}
+
+function getRowItems(row: Row<Customer>) {
   return [
     {
       type: 'label',
-      label: 'Actions'
-    },
-    {
-      label: 'Copy customer ID',
-      icon: 'i-lucide-copy',
-      onSelect() {
-        navigator.clipboard.writeText(row.original.id.toString())
-        toast.add({
-          title: 'Copied to clipboard',
-          description: 'Customer ID copied to clipboard'
-        })
-      }
+      label: '操作'
     },
     {
       type: 'separator'
     },
     {
-      label: 'View customer details',
-      icon: 'i-lucide-list'
-    },
-    {
-      label: 'View customer payments',
-      icon: 'i-lucide-wallet'
-    },
-    {
-      type: 'separator'
-    },
-    {
-      label: 'Delete customer',
+      label: '删除',
       icon: 'i-lucide-trash',
       color: 'error',
       onSelect() {
-        toast.add({
-          title: 'Customer deleted',
-          description: 'The customer has been deleted.'
-        })
+        requestDeleteOneCustomer(row)
       }
     }
   ]
 }
 
-const columns: TableColumn<User>[] = [
+const columns: TableColumn<Customer>[] = [
   {
     id: 'select',
     header: ({ table }) =>
@@ -94,59 +141,56 @@ const columns: TableColumn<User>[] = [
     header: 'ID'
   },
   {
+    accessorKey: 'code',
+    header: '编码'
+  },
+  {
     accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => {
-      return h('div', { class: 'flex items-center gap-3' }, [
-        h(UAvatar, {
-          ...row.original.avatar,
-          size: 'lg'
-        }),
-        h('div', undefined, [
-          h('p', { class: 'font-medium text-highlighted' }, row.original.name),
-          h('p', { class: '' }, `@${row.original.name}`)
-        ])
-      ])
-    }
+    header: '名称'
+  },
+  {
+    accessorKey: 'contact',
+    header: '联系人'
+  },
+  {
+    accessorKey: 'phone',
+    header: '联系电话'
   },
   {
     accessorKey: 'email',
-    header: ({ column }) => {
-      const isSorted = column.getIsSorted()
-
-      return h(UButton, {
-        color: 'neutral',
-        variant: 'ghost',
-        label: 'Email',
-        icon: isSorted
-          ? isSorted === 'asc'
-            ? 'i-lucide-arrow-up-narrow-wide'
-            : 'i-lucide-arrow-down-wide-narrow'
-          : 'i-lucide-arrow-up-down',
-        class: '-mx-2.5',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-      })
-    }
+    header: '联系邮箱'
   },
   {
-    accessorKey: 'location',
-    header: 'Location',
-    cell: ({ row }) => row.original.location
+    accessorKey: 'address',
+    header: '联系地址'
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: '状态',
     filterFn: 'equals',
     cell: ({ row }) => {
       const color = {
-        subscribed: 'success' as const,
-        unsubscribed: 'error' as const,
-        bounced: 'warning' as const
+        1: 'success' as const,
+        0: 'neutral' as const
       }[row.original.status]
 
       return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () =>
-        row.original.status
+        row.original.status == 1 ? '有效' : '无效'
       )
+    }
+  },
+  {
+    accessorKey: 'created_at',
+    header: '创建时间',
+    cell: ({ row }) => {
+      return dayjs(row.getValue('created_at')).format('YYYY-MM-DD HH:mm:ss')
+    }
+  },
+  {
+    accessorKey: 'updated_at',
+    header: '更新时间',
+    cell: ({ row }) => {
+      return dayjs(row.getValue('updated_at')).format('YYYY-MM-DD HH:mm:ss')
     }
   },
   {
@@ -199,11 +243,6 @@ const email = computed({
     table.value?.tableApi?.getColumn('email')?.setFilterValue(value || undefined)
   }
 })
-
-const pagination = ref({
-  pageIndex: 0,
-  pageSize: 10
-})
 </script>
 
 <template>
@@ -215,7 +254,7 @@ const pagination = ref({
         </template>
 
         <template #right>
-          <CustomersAddModal />
+          <CustomerAddModal />
         </template>
       </UDashboardNavbar>
     </template>
@@ -226,33 +265,32 @@ const pagination = ref({
           v-model="email"
           class="max-w-sm"
           icon="i-lucide-search"
-          placeholder="Filter emails..."
+          placeholder="Filter email..."
         />
 
         <div class="flex flex-wrap items-center gap-1.5">
-          <CustomersDeleteModal :count="table?.tableApi?.getFilteredSelectedRowModel().rows.length">
+          <CustomerDeleteModal :count="selectedCount" :ids="selectedIds">
             <UButton
-              v-if="table?.tableApi?.getFilteredSelectedRowModel().rows.length"
-              label="Delete"
+              v-if="selectedCount"
+              label="删除"
               color="error"
               variant="subtle"
               icon="i-lucide-trash"
             >
               <template #trailing>
                 <UKbd>
-                  {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length }}
+                  {{ selectedCount }}
                 </UKbd>
               </template>
             </UButton>
-          </CustomersDeleteModal>
+          </CustomerDeleteModal>
 
           <USelect
             v-model="statusFilter"
             :items="[
-              { label: 'All', value: 'all' },
-              { label: 'Subscribed', value: 'subscribed' },
-              { label: 'Unsubscribed', value: 'unsubscribed' },
-              { label: 'Bounced', value: 'bounced' }
+              { label: '全部', value: 'all' },
+              { label: '有效', value: 1 },
+              { label: '无效', value: 0 }
             ]"
             :ui="{ trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
             placeholder="Filter status"
@@ -278,7 +316,7 @@ const pagination = ref({
             :content="{ align: 'end' }"
           >
             <UButton
-              label="Display"
+              label="展示"
               color="neutral"
               variant="outline"
               trailing-icon="i-lucide-settings-2"
@@ -292,12 +330,8 @@ const pagination = ref({
         v-model:column-filters="columnFilters"
         v-model:column-visibility="columnVisibility"
         v-model:row-selection="rowSelection"
-        v-model:pagination="pagination"
-        :pagination-options="{
-          getPaginationRowModel: getPaginationRowModel()
-        }"
         class="shrink-0"
-        :data="data"
+        :data="tableData"
         :columns="columns"
         :loading="status === 'pending'"
         :ui="{
@@ -313,18 +347,43 @@ const pagination = ref({
       <div class="flex items-center justify-between gap-3 border-t border-default pt-4 mt-auto">
         <div class="text-sm text-muted">
           {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
-          {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }} row(s) selected.
+          {{ total }} row(s) total.
         </div>
 
         <div class="flex items-center gap-1.5">
           <UPagination
-            :default-page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
-            :items-per-page="table?.tableApi?.getState().pagination.pageSize"
-            :total="table?.tableApi?.getFilteredRowModel().rows.length"
-            @update:page="(p: number) => table?.tableApi?.setPageIndex(p - 1)"
+            :page="pagination.pageIndex + 1"
+            :items-per-page="pagination.pageSize"
+            :total="total"
+            @update:page="(p: number) => (pagination.pageIndex = p - 1)"
           />
         </div>
       </div>
+
+      <UModal
+        v-model:open="singleDeleteOpen"
+        :title="`删除客户 ${singleDeleteCustomer?.name || ''}`"
+        description="你确定吗, 该项目操作不可恢复."
+      >
+        <template #body>
+          <div class="flex justify-end gap-2">
+            <UButton
+              label="取消"
+              color="neutral"
+              variant="subtle"
+              @click="singleDeleteOpen = false"
+            />
+            <UButton
+              label="删除"
+              color="error"
+              variant="solid"
+              :loading="singleDeleteLoading"
+              :disabled="singleDeleteLoading || !singleDeleteCustomer"
+              @click="confirmDeleteOneCustomer"
+            />
+          </div>
+        </template>
+      </UModal>
     </template>
   </UDashboardPanel>
 </template>

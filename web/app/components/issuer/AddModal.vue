@@ -5,9 +5,9 @@ import type { ApiResponse } from '~/types/api'
 import type { Issuer, IssuerAddBody } from '~/types/issuer'
 
 const schema = z.object({
-  code: z.string(),
-  name: z.string(),
-  description: z.string()
+  code: z.string().min(1, '编码不能为空'),
+  name: z.string().min(1, '名称不能为空'),
+  description: z.string().optional()
 })
 const open = ref(false)
 const isSubmitting = ref(false)

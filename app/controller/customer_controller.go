@@ -37,6 +37,54 @@ func CustomerGet(ctx *gin.Context) {
 	http.JsonResponse(ctx, result)
 }
 
+// CustomerDeleteOne
+// @Summary      删除签发机构信息
+// @Description  通过ID删除数据
+// @Tags         Customer
+// @Accept       json
+// @Produce      json
+// @Param        id  query  int  true  "产品ID"
+// @Success      200  {object}  http.BaseResponse[model.Customer]  "成功响应"
+// @Failure      400  {object}  http.BaseResponse[any]      "参数错误"
+// @Failure      404  {object}  http.BaseResponse[any]      "用户不存在"
+// @Router       /api/customer/delete/:id [post]
+func CustomerDeleteOne(ctx *gin.Context) {
+	var in input.CustomerDeleteOneInput
+	if err := ctx.ShouldBindUri(&in); err != nil {
+		http.JsonResponse(ctx, err)
+		return
+	}
+	if err := customerService.CustomerDeleteOne(ctx.Request.Context(), &in); err != nil {
+		http.JsonResponse(ctx, err)
+		return
+	}
+	http.JsonResponse(ctx, nil)
+}
+
+// CustomerDelete
+// @Summary      删除签发机构信息
+// @Description  通过ID列表删除数据
+// @Tags         Customer
+// @Accept       json
+// @Produce      json
+// @Param        id  query  int  true  "产品ID"
+// @Success      200  {object}  http.BaseResponse[model.Customer]  "成功响应"
+// @Failure      400  {object}  http.BaseResponse[any]      "参数错误"
+// @Failure      404  {object}  http.BaseResponse[any]      "用户不存在"
+// @Router       /api/customer/delete [post]
+func CustomerDelete(ctx *gin.Context) {
+	var in input.CustomerDeleteInput
+	if err := ctx.ShouldBindJSON(&in); err != nil {
+		http.JsonResponse(ctx, err)
+		return
+	}
+	if err := customerService.CustomerDelete(ctx.Request.Context(), &in); err != nil {
+		http.JsonResponse(ctx, err)
+		return
+	}
+	http.JsonResponse(ctx, nil)
+}
+
 // CustomerAdd
 // @Summary      客户添加接口
 // @Description  添加客户信息
