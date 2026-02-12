@@ -4,6 +4,12 @@ type (
 	ProductGetInput struct {
 		ID uint64 `form:"id"`
 	}
+	ProductDeleteOneInput struct {
+		ID uint64 `uri:"id" binding:"required"`
+	}
+	ProductDeleteInput struct {
+		IDs []uint64 `json:"ids" binding:"required"`
+	}
 	ProductAddInput struct {
 		Code        string `json:"code" form:"code" binding:"required" example:"product-add-code"`
 		Name        string `json:"name" form:"name" binding:"required" example:"product-a"`

@@ -1,76 +1,123 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
 import { upperFirst } from 'scule'
-import { getPaginationRowModel } from '@tanstack/table-core'
-import type { Row } from '@tanstack/table-core'
-import type { User } from '~/types'
+import type { Row, Table as TanStackTable } from '@tanstack/table-core'
+import type { ApiMessageResponse, ApiResponse } from '~/types/api'
+import type { Product, ProductQueryData } from '~/types/product'
+import dayjs from 'dayjs'
 
-const UAvatar = resolveComponent('UAvatar')
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 const UCheckbox = resolveComponent('UCheckbox')
 
 const toast = useToast()
-const table = useTemplateRef('table')
+const table = useTemplateRef<{ tableApi?: TanStackTable<Product> }>('table')
 
 const columnFilters = ref([{
-  id: 'email',
+  id: 'code',
   value: ''
 }])
 const columnVisibility = ref()
-const rowSelection = ref({ 1: true })
+const rowSelection = ref<Record<string, boolean>>({})
 
-const { data, status } = await useFetch<User[]>('/api/customers', {
+const pagination = ref({
+  pageIndex: 0,
+  pageSize: 10
+})
+
+const requestBody = computed(() => ({
+  page: pagination.value.pageIndex + 1,
+  size: pagination.value.pageSize
+}))
+
+const { data, status } = await useFetch<ApiResponse<ProductQueryData>>('/api/product/query', {
+  key: 'product-query',
+  method: 'POST',
+  body: requestBody,
+  watch: [requestBody],
+  default: () => ({
+    code: 0,
+    message: 'ok',
+    data: {
+      total: 0,
+      items: []
+    }
+  }),
   lazy: true
 })
 
-function getRowItems(row: Row<User>) {
+const tableData = computed(() => data.value?.data?.items || [])
+const total = computed(() => data.value?.data?.total || 0)
+const selectedRows = computed<Row<Product>[]>(() => table.value?.tableApi?.getFilteredSelectedRowModel().rows || [])
+const selectedIds = computed<number[]>(() => selectedRows.value.map((row: Row<Product>) => row.original.id))
+const selectedCount = computed<number>(() => selectedIds.value.length)
+const singleDeleteOpen = ref(false)
+const singleDeleteLoading = ref(false)
+const singleDeleteProduct = ref<{ id: number, name: string } | null>(null)
+
+function requestDeleteOneProduct(row: Row<Product>) {
+  singleDeleteProduct.value = {
+    id: row.original.id,
+    name: row.original.name
+  }
+  singleDeleteOpen.value = true
+}
+
+async function confirmDeleteOneProduct() {
+  if (!singleDeleteProduct.value || singleDeleteLoading.value) return
+
+  try {
+    singleDeleteLoading.value = true
+    const response = await $fetch<ApiMessageResponse>(`/api/product/delete/${singleDeleteProduct.value.id}`, {
+      method: 'POST'
+    })
+
+    if (response.code !== 0) {
+      throw new Error(response.message || '删除失败')
+    }
+
+    toast.add({
+      title: '删除成功',
+      description: `机构 ${singleDeleteProduct.value.name} 已删除`,
+      color: 'success'
+    })
+    singleDeleteOpen.value = false
+    singleDeleteProduct.value = null
+    rowSelection.value = {}
+    await refreshNuxtData('product-query')
+  } catch (error) {
+    toast.add({
+      title: '删除失败',
+      description: error instanceof Error ? error.message : '请求失败，请稍后重试',
+      color: 'error'
+    })
+  } finally {
+    singleDeleteLoading.value = false
+  }
+}
+
+function getRowItems(row: Row<Product>) {
   return [
     {
       type: 'label',
-      label: 'Actions'
-    },
-    {
-      label: 'Copy customer ID',
-      icon: 'i-lucide-copy',
-      onSelect() {
-        navigator.clipboard.writeText(row.original.id.toString())
-        toast.add({
-          title: 'Copied to clipboard',
-          description: 'Customer ID copied to clipboard'
-        })
-      }
+      label: '操作'
     },
     {
       type: 'separator'
     },
     {
-      label: 'View customer details',
-      icon: 'i-lucide-list'
-    },
-    {
-      label: 'View customer payments',
-      icon: 'i-lucide-wallet'
-    },
-    {
-      type: 'separator'
-    },
-    {
-      label: 'Delete customer',
+      label: '删除',
       icon: 'i-lucide-trash',
       color: 'error',
       onSelect() {
-        toast.add({
-          title: 'Customer deleted',
-          description: 'The customer has been deleted.'
-        })
+        requestDeleteOneProduct(row)
       }
     }
   ]
 }
 
-const columns: TableColumn<User>[] = [
+const columns: TableColumn<Product>[] = [
   {
     id: 'select',
     header: ({ table }) =>
@@ -94,59 +141,44 @@ const columns: TableColumn<User>[] = [
     header: 'ID'
   },
   {
+    accessorKey: 'code',
+    header: '编码'
+  },
+  {
     accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => {
-      return h('div', { class: 'flex items-center gap-3' }, [
-        h(UAvatar, {
-          ...row.original.avatar,
-          size: 'lg'
-        }),
-        h('div', undefined, [
-          h('p', { class: 'font-medium text-highlighted' }, row.original.name),
-          h('p', { class: '' }, `@${row.original.name}`)
-        ])
-      ])
-    }
+    header: '名称'
   },
   {
-    accessorKey: 'email',
-    header: ({ column }) => {
-      const isSorted = column.getIsSorted()
-
-      return h(UButton, {
-        color: 'neutral',
-        variant: 'ghost',
-        label: 'Email',
-        icon: isSorted
-          ? isSorted === 'asc'
-            ? 'i-lucide-arrow-up-narrow-wide'
-            : 'i-lucide-arrow-down-wide-narrow'
-          : 'i-lucide-arrow-up-down',
-        class: '-mx-2.5',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-      })
-    }
-  },
-  {
-    accessorKey: 'location',
-    header: 'Location',
-    cell: ({ row }) => row.original.location
+    accessorKey: 'description',
+    header: '描述'
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: '状态',
     filterFn: 'equals',
     cell: ({ row }) => {
       const color = {
-        subscribed: 'success' as const,
-        unsubscribed: 'error' as const,
-        bounced: 'warning' as const
+        1: 'success' as const,
+        0: 'neutral' as const
       }[row.original.status]
 
       return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () =>
-        row.original.status
+        row.original.status == 1 ? '有效' : '无效'
       )
+    }
+  },
+  {
+    accessorKey: 'created_at',
+    header: '创建时间',
+    cell: ({ row }) => {
+      return dayjs(row.getValue('created_at')).format('YYYY-MM-DD HH:mm:ss')
+    }
+  },
+  {
+    accessorKey: 'updated_at',
+    header: '更新时间',
+    cell: ({ row }) => {
+      return dayjs(row.getValue('updated_at')).format('YYYY-MM-DD HH:mm:ss')
     }
   },
   {
@@ -191,18 +223,13 @@ watch(() => statusFilter.value, (newVal) => {
   }
 })
 
-const email = computed({
+const code = computed({
   get: (): string => {
-    return (table.value?.tableApi?.getColumn('email')?.getFilterValue() as string) || ''
+    return (table.value?.tableApi?.getColumn('code')?.getFilterValue() as string) || ''
   },
   set: (value: string) => {
-    table.value?.tableApi?.getColumn('email')?.setFilterValue(value || undefined)
+    table.value?.tableApi?.getColumn('code')?.setFilterValue(value || undefined)
   }
-})
-
-const pagination = ref({
-  pageIndex: 0,
-  pageSize: 10
 })
 </script>
 
@@ -215,7 +242,7 @@ const pagination = ref({
         </template>
 
         <template #right>
-          <CustomersAddModal />
+          <ProductAddModal />
         </template>
       </UDashboardNavbar>
     </template>
@@ -223,36 +250,35 @@ const pagination = ref({
     <template #body>
       <div class="flex flex-wrap items-center justify-between gap-1.5">
         <UInput
-          v-model="email"
+          v-model="code"
           class="max-w-sm"
           icon="i-lucide-search"
-          placeholder="Filter emails..."
+          placeholder="Filter code..."
         />
 
         <div class="flex flex-wrap items-center gap-1.5">
-          <CustomersDeleteModal :count="table?.tableApi?.getFilteredSelectedRowModel().rows.length">
+          <ProductDeleteModal :count="selectedCount" :ids="selectedIds">
             <UButton
-              v-if="table?.tableApi?.getFilteredSelectedRowModel().rows.length"
-              label="Delete"
+              v-if="selectedCount"
+              label="删除"
               color="error"
               variant="subtle"
               icon="i-lucide-trash"
             >
               <template #trailing>
                 <UKbd>
-                  {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length }}
+                  {{ selectedCount }}
                 </UKbd>
               </template>
             </UButton>
-          </CustomersDeleteModal>
+          </ProductDeleteModal>
 
           <USelect
             v-model="statusFilter"
             :items="[
-              { label: 'All', value: 'all' },
-              { label: 'Subscribed', value: 'subscribed' },
-              { label: 'Unsubscribed', value: 'unsubscribed' },
-              { label: 'Bounced', value: 'bounced' }
+              { label: '全部', value: 'all' },
+              { label: '有效', value: 1 },
+              { label: '无效', value: 0 }
             ]"
             :ui="{ trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
             placeholder="Filter status"
@@ -278,7 +304,7 @@ const pagination = ref({
             :content="{ align: 'end' }"
           >
             <UButton
-              label="Display"
+              label="展示"
               color="neutral"
               variant="outline"
               trailing-icon="i-lucide-settings-2"
@@ -292,12 +318,8 @@ const pagination = ref({
         v-model:column-filters="columnFilters"
         v-model:column-visibility="columnVisibility"
         v-model:row-selection="rowSelection"
-        v-model:pagination="pagination"
-        :pagination-options="{
-          getPaginationRowModel: getPaginationRowModel()
-        }"
         class="shrink-0"
-        :data="data"
+        :data="tableData"
         :columns="columns"
         :loading="status === 'pending'"
         :ui="{
@@ -313,18 +335,43 @@ const pagination = ref({
       <div class="flex items-center justify-between gap-3 border-t border-default pt-4 mt-auto">
         <div class="text-sm text-muted">
           {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
-          {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }} row(s) selected.
+          {{ total }} row(s) total.
         </div>
 
         <div class="flex items-center gap-1.5">
           <UPagination
-            :default-page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
-            :items-per-page="table?.tableApi?.getState().pagination.pageSize"
-            :total="table?.tableApi?.getFilteredRowModel().rows.length"
-            @update:page="(p: number) => table?.tableApi?.setPageIndex(p - 1)"
+            :page="pagination.pageIndex + 1"
+            :items-per-page="pagination.pageSize"
+            :total="total"
+            @update:page="(p: number) => (pagination.pageIndex = p - 1)"
           />
         </div>
       </div>
+
+      <UModal
+        v-model:open="singleDeleteOpen"
+        :title="`删除机构 ${singleDeleteProduct?.name || ''}`"
+        description="你确定吗, 该项目操作不可恢复."
+      >
+        <template #body>
+          <div class="flex justify-end gap-2">
+            <UButton
+              label="取消"
+              color="neutral"
+              variant="subtle"
+              @click="singleDeleteOpen = false"
+            />
+            <UButton
+              label="删除"
+              color="error"
+              variant="solid"
+              :loading="singleDeleteLoading"
+              :disabled="singleDeleteLoading || !singleDeleteProduct"
+              @click="confirmDeleteOneProduct"
+            />
+          </div>
+        </template>
+      </UModal>
     </template>
   </UDashboardPanel>
 </template>

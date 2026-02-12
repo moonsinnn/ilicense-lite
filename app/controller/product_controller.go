@@ -62,6 +62,54 @@ func ProductAdd(ctx *gin.Context) {
 	http.JsonResponse(ctx, result)
 }
 
+// ProductDeleteOne
+// @Summary      删除签发机构信息
+// @Description  通过ID删除数据
+// @Tags         Product
+// @Accept       json
+// @Produce      json
+// @Param        id  query  int  true  "产品ID"
+// @Success      200  {object}  http.BaseResponse[model.Product]  "成功响应"
+// @Failure      400  {object}  http.BaseResponse[any]      "参数错误"
+// @Failure      404  {object}  http.BaseResponse[any]      "用户不存在"
+// @Router       /api/product/delete/:id [post]
+func ProductDeleteOne(ctx *gin.Context) {
+	var in input.ProductDeleteOneInput
+	if err := ctx.ShouldBindUri(&in); err != nil {
+		http.JsonResponse(ctx, err)
+		return
+	}
+	if err := productService.ProductDeleteOne(ctx.Request.Context(), &in); err != nil {
+		http.JsonResponse(ctx, err)
+		return
+	}
+	http.JsonResponse(ctx, nil)
+}
+
+// ProductDelete
+// @Summary      删除签发机构信息
+// @Description  通过ID列表删除数据
+// @Tags         Product
+// @Accept       json
+// @Produce      json
+// @Param        id  query  int  true  "产品ID"
+// @Success      200  {object}  http.BaseResponse[model.Product]  "成功响应"
+// @Failure      400  {object}  http.BaseResponse[any]      "参数错误"
+// @Failure      404  {object}  http.BaseResponse[any]      "用户不存在"
+// @Router       /api/product/delete [post]
+func ProductDelete(ctx *gin.Context) {
+	var in input.ProductDeleteInput
+	if err := ctx.ShouldBindJSON(&in); err != nil {
+		http.JsonResponse(ctx, err)
+		return
+	}
+	if err := productService.ProductDelete(ctx.Request.Context(), &in); err != nil {
+		http.JsonResponse(ctx, err)
+		return
+	}
+	http.JsonResponse(ctx, nil)
+}
+
 // ProductQuery
 // @Summary      产品查询接口
 // @Description  分页查询产品列表

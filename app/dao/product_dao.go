@@ -26,6 +26,18 @@ func (*ProductDao) ProductGet(ctx context.Context, id uint64) (*model.Product, e
 	}
 	return m, nil
 }
+func (*ProductDao) ProductDeleteOne(ctx context.Context, id uint64) error {
+	if err := client.MysqlDemo.WithContext(ctx).Delete(&model.Product{ID: id}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+func (*ProductDao) ProductDelete(ctx context.Context, ids []uint64) error {
+	if err := client.MysqlDemo.WithContext(ctx).Delete(&model.Product{}, ids).Error; err != nil {
+		return err
+	}
+	return nil
+}
 func (*ProductDao) ProductAdd(ctx context.Context, m *model.Product) error {
 	if err := client.MysqlDemo.WithContext(ctx).Create(m).Error; err != nil {
 		return err

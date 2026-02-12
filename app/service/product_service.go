@@ -18,7 +18,12 @@ func NewProductService() *ProductService {
 		productDao: dao.NewProductDao(),
 	}
 }
-
+func (this *ProductService) ProductDeleteOne(ctx context.Context, in *input.ProductDeleteOneInput) error {
+	return this.productDao.ProductDeleteOne(ctx, in.ID)
+}
+func (this *ProductService) ProductDelete(ctx context.Context, in *input.ProductDeleteInput) error {
+	return this.productDao.ProductDelete(ctx, in.IDs)
+}
 func (this *ProductService) ProductGet(ctx context.Context, in *input.ProductGetInput) (interface{}, error) {
 	logger.ServiceLogger.WithContext(ctx).Infof("********%+v", "test")
 	return this.productDao.ProductGet(ctx, in.ID)
