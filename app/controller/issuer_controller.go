@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-
 	"ilicense-lite/library/http"
 	"ilicense-lite/service"
 	"ilicense-lite/type/input"
@@ -127,7 +125,6 @@ func IssuerQuery(ctx *gin.Context) {
 		http.JsonResponse(ctx, err)
 		return
 	}
-	fmt.Println(ctx.Get("userID"))
 	result, err := issuerService.IssuerQuery(ctx.Request.Context(), &in)
 	if err != nil {
 		http.JsonResponse(ctx, err)

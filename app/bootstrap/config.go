@@ -1,8 +1,9 @@
 package bootstrap
 
 import (
-	"io/ioutil"
+	"fmt"
 	"log"
+	"os"
 
 	"ilicense-lite/config"
 
@@ -10,12 +11,37 @@ import (
 )
 
 func InitConfig(file string) {
-	data, err := ioutil.ReadFile(file)
+	data, err := os.ReadFile(file)
 	if err != nil {
 		log.Fatalf("error reading config file: %v", err)
 	}
 	err = yaml.Unmarshal(data, &config.Config)
 	if err != nil {
 		log.Fatalf("error unmarshalling config: %v", err)
+	}
+	applyEnvOverrides()
+}
+
+func applyEnvOverrides() {
+	if v := os.Getenv("APP_PORT"); v != "" {
+		var port int
+		if _, err := fmt.Sscanf(v, "%d", &port); err == nil && port > 0 {
+			config.Config.App.Port = port
+		}
+	}
+	if v := os.Getenv("JWT_SECRET"); v != "" {
+		config.Config.App.JWTSecret = v
+	}
+	if v := os.Getenv("MYSQL_PASSWORD"); v != "" {
+		config.Config.MysqlDemo.DataSource.Password = v
+	}
+	if v := os.Getenv("MYSQL_USERNAME"); v != "" {
+		config.Config.MysqlDemo.DataSource.UserName = v
+	}
+	if v := os.Getenv("MYSQL_ADDRESS"); v != "" {
+		config.Config.MysqlDemo.DataSource.Address = v
+	}
+	if v := os.Getenv("MYSQL_DB_NAME"); v != "" {
+		config.Config.MysqlDemo.DataSource.DBName = v
 	}
 }

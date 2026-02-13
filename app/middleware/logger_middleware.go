@@ -2,25 +2,39 @@ package middleware
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
+	"strings"
 	"time"
 
 	"ilicense-lite/bootstrap/logger"
 	"ilicense-lite/library/util"
 
 	"github.com/gin-gonic/gin"
+	"github.com/goccy/go-json"
 	"github.com/sirupsen/logrus"
 )
 
 // CustomResponseWriter 自定义响应写入器
 type CustomResponseWriter struct {
 	gin.ResponseWriter
-	body *bytes.Buffer
+	body      *bytes.Buffer
+	bodyLimit int
+	isLimited bool
 }
 
 // Write 重写 Write 方法
 func (crw *CustomResponseWriter) Write(b []byte) (int, error) {
-	crw.body.Write(b)                  // 将响应体写入 buffer
+	if !crw.isLimited {
+		remaining := crw.bodyLimit - crw.body.Len()
+		if remaining <= 0 {
+			crw.isLimited = true
+		} else if len(b) > remaining {
+			crw.body.Write(b[:remaining])
+			crw.isLimited = true
+		} else {
+			crw.body.Write(b)
+		}
+	}
 	return crw.ResponseWriter.Write(b) // 调用原始的 Write 方法
 }
 
@@ -32,9 +46,10 @@ func LoggerMiddleware() gin.HandlerFunc {
 
 		// 读取请求体
 		var requestBody []byte
-		if c.Request.Body != nil {
-			requestBody, _ = ioutil.ReadAll(c.Request.Body)
-			c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(requestBody))
+		requestContentType := c.Request.Header.Get("Content-Type")
+		if c.Request.Body != nil && shouldLogBody(requestContentType) {
+			requestBody, _ = io.ReadAll(io.LimitReader(c.Request.Body, maxBodyLength+1))
+			c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
 		}
 
 		// 创建自定义响应写入器
@@ -42,6 +57,7 @@ func LoggerMiddleware() gin.HandlerFunc {
 		crw := &CustomResponseWriter{
 			ResponseWriter: c.Writer,
 			body:           body,
+			bodyLimit:      maxBodyLength + 1,
 		}
 		c.Writer = crw
 
@@ -52,7 +68,7 @@ func LoggerMiddleware() gin.HandlerFunc {
 		duration := time.Since(start)
 
 		// 获取响应内容和 Content-Type
-		responseBody := body.String()
+		responseBody := body.Bytes()
 		contentType := c.Writer.Header().Get("Content-Type")
 
 		traceID, spanID := util.GetTraceInfo(c.Request.Context())
@@ -66,9 +82,78 @@ func LoggerMiddleware() gin.HandlerFunc {
 			"duration":      duration,
 			"client_ip":     c.ClientIP(),
 			"user_agent":    c.Request.UserAgent(),
-			"request_body":  string(requestBody),
-			"response_body": responseBody,
+			"request_body":  sanitizeBody(requestBody, requestContentType),
+			"response_body": sanitizeBody(responseBody, contentType),
 			"content_type":  contentType,
 		}).Info("input processed")
 	}
+}
+
+var sensitiveFields = map[string]struct{}{
+	"password":        {},
+	"old_password":    {},
+	"new_password":    {},
+	"token":           {},
+	"authorization":   {},
+	"activation_code": {},
+	"private_key":     {},
+}
+
+const (
+	redactedValue = "***REDACTED***"
+	maxBodyLength = 2048
+)
+
+func shouldLogBody(contentType string) bool {
+	ct := strings.ToLower(contentType)
+	return strings.Contains(ct, "application/json") ||
+		strings.Contains(ct, "text/plain") ||
+		strings.Contains(ct, "application/x-www-form-urlencoded")
+}
+
+func sanitizeBody(raw []byte, contentType string) string {
+	if len(raw) == 0 {
+		return ""
+	}
+
+	if !strings.Contains(strings.ToLower(contentType), "application/json") {
+		return truncateString(string(raw), maxBodyLength)
+	}
+
+	var payload interface{}
+	if err := json.Unmarshal(raw, &payload); err != nil {
+		return truncateString(string(raw), maxBodyLength)
+	}
+
+	redact(payload)
+	sanitized, err := json.Marshal(payload)
+	if err != nil {
+		return "[unmarshalable response]"
+	}
+
+	return truncateString(string(sanitized), maxBodyLength)
+}
+
+func redact(v interface{}) {
+	switch data := v.(type) {
+	case map[string]interface{}:
+		for k, value := range data {
+			if _, ok := sensitiveFields[strings.ToLower(k)]; ok {
+				data[k] = redactedValue
+				continue
+			}
+			redact(value)
+		}
+	case []interface{}:
+		for _, item := range data {
+			redact(item)
+		}
+	}
+}
+
+func truncateString(s string, maxLen int) string {
+	if len(s) <= maxLen {
+		return s
+	}
+	return s[:maxLen] + "...(truncated)"
 }

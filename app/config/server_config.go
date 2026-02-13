@@ -1,6 +1,7 @@
 package config
 
 type ServerConfig struct {
-	Name string `yaml:"name"`
-	Port int    `yaml:"port"`
+	Name      string `yaml:"name"`
+	Port      int    `yaml:"port"`
+	JWTSecret string `yaml:"jwt_secret"`
 }

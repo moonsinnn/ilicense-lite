@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"ilicense-lite/bootstrap/logger"
 	"ilicense-lite/dao"
 	"ilicense-lite/type/input"
 	"ilicense-lite/type/model"
@@ -25,7 +24,6 @@ func (this *ProductService) ProductDelete(ctx context.Context, in *input.Product
 	return this.productDao.ProductDelete(ctx, in.IDs)
 }
 func (this *ProductService) ProductGet(ctx context.Context, in *input.ProductGetInput) (interface{}, error) {
-	logger.ServiceLogger.WithContext(ctx).Infof("********%+v", "test")
 	return this.productDao.ProductGet(ctx, in.ID)
 }
 func (this *ProductService) ProductAdd(ctx context.Context, in *input.ProductAddInput) (interface{}, error) {

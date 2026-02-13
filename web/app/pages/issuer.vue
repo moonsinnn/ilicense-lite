@@ -119,17 +119,6 @@ function getRowItems(row: Row<Issuer>) {
       }
     },
     {
-      label: '复制私钥',
-      icon: 'i-lucide-copy',
-      onSelect() {
-        navigator.clipboard.writeText(row.original.private_key.toString())
-        toast.add({
-          title: '已复制到剪贴板',
-          description: '机构私钥已复制到剪贴板'
-        })
-      }
-    },
-    {
       type: 'separator'
     },
     {

@@ -7,7 +7,6 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 
-	"ilicense-lite/bootstrap/logger"
 	"ilicense-lite/dao"
 	"ilicense-lite/library/util"
 	"ilicense-lite/type/input"
@@ -26,7 +25,6 @@ func NewIssuerService() *IssuerService {
 }
 
 func (this *IssuerService) IssuerGet(ctx context.Context, in *input.IssuerGetInput) (interface{}, error) {
-	logger.ServiceLogger.WithContext(ctx).Infof("********%+v", "test")
 	return this.IssuerDao.IssuerGet(ctx, in.ID)
 }
 

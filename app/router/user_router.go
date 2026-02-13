@@ -2,15 +2,19 @@ package router
 
 import (
 	"ilicense-lite/controller"
+	"ilicense-lite/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
 func UserRouterInit(e *gin.Engine) {
-	group := e.Group("/api/user")
-	group.POST("/register", controller.UserRegister)
-	group.POST("/login", controller.UserLogin)
-	group.GET("/profile", controller.UserProfileGet)
-	group.POST("/profile/update", controller.UserProfileUpdate)
-	group.POST("/password/update", controller.UserPasswordUpdate)
+	publicGroup := e.Group("/api/user")
+	publicGroup.POST("/register", controller.UserRegister)
+	publicGroup.POST("/login", controller.UserLogin)
+
+	protectedGroup := e.Group("/api/user")
+	protectedGroup.Use(middleware.RequireAuth())
+	protectedGroup.GET("/profile", controller.UserProfileGet)
+	protectedGroup.POST("/profile/update", controller.UserProfileUpdate)
+	protectedGroup.POST("/password/update", controller.UserPasswordUpdate)
 }

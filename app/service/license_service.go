@@ -8,11 +8,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"strings"
 	"time"
 
-	"ilicense-lite/bootstrap/logger"
 	"ilicense-lite/dao"
 	"ilicense-lite/library/util"
 	"ilicense-lite/type/input"
@@ -44,15 +42,15 @@ func (this *LicenseService) LicenseDelete(ctx context.Context, in *input.License
 	return this.licenseDao.LicenseDelete(ctx, in.IDs)
 }
 func (this *LicenseService) LicenseGet(ctx context.Context, in *input.LicenseGetInput) (interface{}, error) {
-	logger.ServiceLogger.WithContext(ctx).Infof("********%+v", "test")
 	return this.licenseDao.LicenseGet(ctx, in.ID)
 }
 func (this *LicenseService) LicenseAdd(ctx context.Context, in *input.LicenseAddInput) (interface{}, error) {
+	now := time.Now()
 	if in.IssuerID <= 0 {
 		in.IssuerID = 1
 	}
 	if in.Code == "" {
-		in.Code = fmt.Sprintf("LIC-%d", time.Now().UnixMilli())
+		in.Code = newLicenseCode(now)
 	}
 	expireAtTime, err := util.ParseDate(in.ExpireAt)
 	if err != nil {
@@ -63,49 +61,14 @@ func (this *LicenseService) LicenseAdd(ctx context.Context, in *input.LicenseAdd
 		ProductID:    in.ProductID,
 		CustomerID:   in.CustomerID,
 		IssuerID:     in.IssuerID,
-		IssueAt:      time.Now(),
+		IssueAt:      now,
 		ExpireAt:     expireAtTime,
 		Modules:      in.Modules,
 		MaxInstances: in.MaxInstances,
 		Remarks:      in.Remarks,
 	}
 
-	issuer, err := this.issuerDao.IssuerGet(ctx, in.IssuerID)
-	if err != nil {
-		return nil, err
-	}
-	product, err := this.productDao.ProductGet(ctx, in.ProductID)
-	if err != nil {
-		return nil, err
-	}
-	customer, err := this.customerDao.CustomerGet(ctx, in.CustomerID)
-	if err != nil {
-		return nil, err
-	}
-	// 2. 构建License数据
-	licenseData := &output.LicenseInfo{
-		LicenseCode:  m.Code,
-		CustomerCode: customer.Code,
-		CustomerName: customer.Name,
-		ProductCode:  product.Code,
-		ProductName:  product.Name,
-		IssuerCode:   issuer.Code,
-		IssuerName:   issuer.Name,
-		IssueAt:      m.IssueAt,
-		ExpireAt:     m.ExpireAt,
-		Modules:      m.Modules,
-		MaxInstances: m.MaxInstances,
-	}
-
-	licenseDataBytes, err := json.Marshal(licenseData)
-	if err != nil {
-		return nil, err
-	}
-	privateKey, err := util.GetPrivateKey(issuer.PrivateKey)
-	if err != nil {
-		return nil, err
-	}
-	activeCode, err := util.GenerateActivationCode(string(licenseDataBytes), privateKey)
+	activeCode, err := this.buildActivationCode(ctx, m)
 	if err != nil {
 		return nil, err
 	}
@@ -117,19 +80,8 @@ func (this *LicenseService) LicenseAdd(ctx context.Context, in *input.LicenseAdd
 }
 
 func (this *LicenseService) LicenseRenew(ctx context.Context, in *input.LicenseRenewInput) (interface{}, error) {
+	now := time.Now()
 	license, err := this.licenseDao.LicenseGet(ctx, in.ID)
-	if err != nil {
-		return nil, err
-	}
-	issuer, err := this.issuerDao.IssuerGet(ctx, license.IssuerID)
-	if err != nil {
-		return nil, err
-	}
-	product, err := this.productDao.ProductGet(ctx, license.ProductID)
-	if err != nil {
-		return nil, err
-	}
-	customer, err := this.customerDao.CustomerGet(ctx, license.CustomerID)
 	if err != nil {
 		return nil, err
 	}
@@ -138,40 +90,18 @@ func (this *LicenseService) LicenseRenew(ctx context.Context, in *input.LicenseR
 		return nil, err
 	}
 	m := &model.License{
-		Code:         fmt.Sprintf("LIC-%d", time.Now().UnixMilli()),
+		Code:         newLicenseCode(now),
 		ProductID:    license.ProductID,
 		CustomerID:   license.CustomerID,
 		IssuerID:     license.IssuerID,
-		IssueAt:      time.Now(),
+		IssueAt:      now,
 		ExpireAt:     expireAtTime,
 		Modules:      license.Modules,
 		MaxInstances: license.MaxInstances,
 		Remarks:      in.Remarks,
 	}
 
-	// 2. 构建License数据
-	licenseData := &output.LicenseInfo{
-		LicenseCode:  m.Code,
-		CustomerCode: customer.Code,
-		CustomerName: customer.Name,
-		ProductCode:  product.Code,
-		ProductName:  product.Name,
-		IssuerCode:   issuer.Code,
-		IssuerName:   issuer.Name,
-		IssueAt:      m.IssueAt,
-		ExpireAt:     m.ExpireAt,
-		Modules:      m.Modules,
-		MaxInstances: m.MaxInstances,
-	}
-	licenseDataBytes, err := json.Marshal(licenseData)
-	if err != nil {
-		return nil, err
-	}
-	privateKey, err := util.GetPrivateKey(issuer.PrivateKey)
-	if err != nil {
-		return nil, err
-	}
-	activeCode, err := util.GenerateActivationCode(string(licenseDataBytes), privateKey)
+	activeCode, err := this.buildActivationCode(ctx, m)
 	if err != nil {
 		return nil, err
 	}
@@ -213,14 +143,15 @@ func ValidateActivationCode(
 	// 1. 清理格式（去空格）
 	cleaned := strings.ReplaceAll(activationCode, " ", "")
 	cleaned = strings.TrimSpace(cleaned)
-	log.Printf("清理后激活码长度: %d", len(cleaned))
+	if cleaned == "" {
+		return nil, errors.New("activation code is empty")
+	}
 
 	// 2. URL-safe Base64 解码（无 padding）
 	decoded, err := base64.RawURLEncoding.DecodeString(cleaned)
 	if err != nil {
 		return nil, fmt.Errorf("base64 decode failed: %w", err)
 	}
-	log.Printf("解码后长度: %d bytes", len(decoded))
 
 	// 3. 解析数据结构
 	buf := bytes.NewReader(decoded)
@@ -230,29 +161,30 @@ func ValidateActivationCode(
 	if err := binary.Read(buf, binary.BigEndian, &dataLen); err != nil {
 		return nil, err
 	}
-	log.Printf("数据长度: %d bytes", dataLen)
+	if dataLen <= 0 || int(dataLen) > buf.Len() {
+		return nil, errors.New("invalid activation payload length")
+	}
 
 	// 读取数据
 	dataBytes := make([]byte, dataLen)
 	if _, err := io.ReadFull(buf, dataBytes); err != nil {
 		return nil, err
 	}
-	jsonData := string(dataBytes)
-	log.Printf("License数据: %s", jsonData)
 
 	// 读取签名长度
 	var sigLen int32
 	if err := binary.Read(buf, binary.BigEndian, &sigLen); err != nil {
 		return nil, err
 	}
-	log.Printf("签名长度: %d bytes", sigLen)
+	if sigLen <= 0 || int(sigLen) > buf.Len() {
+		return nil, errors.New("invalid activation signature length")
+	}
 
 	// 读取签名
 	signature := make([]byte, sigLen)
 	if _, err := io.ReadFull(buf, signature); err != nil {
 		return nil, err
 	}
-	log.Printf("实际读取签名: %d bytes", len(signature))
 
 	// 4. 加载公钥
 	publicKey, err := util.LoadPublicKey(publicKeyBase64)
@@ -262,37 +194,63 @@ func ValidateActivationCode(
 
 	// 5. 验证签名
 	if err := util.VerifySignature(dataBytes, signature, publicKey); err != nil {
-		log.Printf("签名验证失败: %v", err)
 		return nil, errors.New("signature verification failed")
 	}
 
 	// 6. 解析 License JSON
-	var dataMap map[string]interface{}
-	if err := json.Unmarshal(dataBytes, &dataMap); err != nil {
+	var info output.LicenseInfo
+	if err := json.Unmarshal(dataBytes, &info); err != nil {
 		return nil, err
 	}
-
-	logger.ServiceLogger.Infof("----------%+v", dataMap)
-	issueAt, _ := util.ParseDate(dataMap["issue_at"].(string))
-	expireAt, _ := util.ParseDate(dataMap["expire_at"].(string))
-	// 7. 组装返回对象
-	info := &output.LicenseInfo{
-		CustomerCode: dataMap["customer_code"].(string),
-		CustomerName: dataMap["customer_name"].(string),
-		ProductCode:  dataMap["product_code"].(string),
-		ProductName:  dataMap["product_name"].(string),
-		IssuerCode:   dataMap["issuer_code"].(string),
-		IssuerName:   dataMap["issuer_name"].(string),
-		IssueAt:      issueAt,
-		ExpireAt:     expireAt,
-		Modules:      dataMap["modules"].(string),
-		MaxInstances: uint64(dataMap["max_instances"].(float64)), // JSON number
+	if info.IssuerCode == "" || info.CustomerCode == "" || info.ProductCode == "" {
+		return nil, errors.New("invalid license payload")
 	}
 
 	// 8. 校验有效期
-	if info.ExpireAt.Before(time.Now()) {
+	if info.ExpireAt.IsZero() || info.ExpireAt.Before(time.Now()) {
 		return nil, errors.New("license expired")
 	}
 
-	return &output.LicenseActivateOutput{OK: true, LicenseInfo: info}, nil
+	return &output.LicenseActivateOutput{OK: true, LicenseInfo: &info}, nil
+}
+
+func newLicenseCode(now time.Time) string {
+	return fmt.Sprintf("LIC-%d", now.UnixNano())
+}
+
+func (this *LicenseService) buildActivationCode(ctx context.Context, m *model.License) (string, error) {
+	issuer, err := this.issuerDao.IssuerGet(ctx, m.IssuerID)
+	if err != nil {
+		return "", err
+	}
+	product, err := this.productDao.ProductGet(ctx, m.ProductID)
+	if err != nil {
+		return "", err
+	}
+	customer, err := this.customerDao.CustomerGet(ctx, m.CustomerID)
+	if err != nil {
+		return "", err
+	}
+	licenseData := &output.LicenseInfo{
+		LicenseCode:  m.Code,
+		CustomerCode: customer.Code,
+		CustomerName: customer.Name,
+		ProductCode:  product.Code,
+		ProductName:  product.Name,
+		IssuerCode:   issuer.Code,
+		IssuerName:   issuer.Name,
+		IssueAt:      m.IssueAt,
+		ExpireAt:     m.ExpireAt,
+		Modules:      m.Modules,
+		MaxInstances: m.MaxInstances,
+	}
+	licenseDataBytes, err := json.Marshal(licenseData)
+	if err != nil {
+		return "", err
+	}
+	privateKey, err := util.GetPrivateKey(issuer.PrivateKey)
+	if err != nil {
+		return "", err
+	}
+	return util.GenerateActivationCode(string(licenseDataBytes), privateKey)
 }

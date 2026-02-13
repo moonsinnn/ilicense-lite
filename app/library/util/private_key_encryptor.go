@@ -11,13 +11,11 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
-	"log"
+	"os"
 	"strings"
 )
 
-// ⚠️ 主密钥（建议来自 env）
-// masterKey := os.Getenv("LICENSE_MASTER_KEY")
-const masterKey = "master-key"
+const defaultMasterKey = "master-key"
 
 func generateKey(masterKey string) ([]byte, error) {
 	hash := sha256.Sum256([]byte(masterKey))
@@ -69,7 +67,7 @@ func decryptAES_ECB(ciphertext, key []byte) ([]byte, error) {
 
 // Encrypt 私钥
 func Encrypt(privateKey string) (string, error) {
-	key, err := generateKey(masterKey)
+	key, err := generateKey(getMasterKey())
 	if err != nil {
 		return "", err
 	}
@@ -84,7 +82,7 @@ func Encrypt(privateKey string) (string, error) {
 
 // Decrypt 私钥
 func Decrypt(encryptedPrivateKey string) (string, error) {
-	key, err := generateKey(masterKey)
+	key, err := generateKey(getMasterKey())
 	if err != nil {
 		return "", err
 	}
@@ -132,7 +130,6 @@ func GetPrivateKey(encryptedPrivateKey string) (*rsa.PrivateKey, error) {
 func GenerateActivationCode(jsonData string, privateKey *rsa.PrivateKey) (string, error) {
 
 	dataBytes := []byte(jsonData)
-	log.Printf("License数据长度: %d bytes", len(dataBytes))
 
 	// 1. RSA-SHA256 签名
 	hashed := sha256.Sum256(dataBytes)
@@ -146,7 +143,6 @@ func GenerateActivationCode(jsonData string, privateKey *rsa.PrivateKey) (string
 	if err != nil {
 		return "", err
 	}
-	log.Printf("签名长度: %d bytes (应该是256)", len(signBytes))
 
 	// 2. 组合数据
 	buf := new(bytes.Buffer)
@@ -173,7 +169,6 @@ func GenerateActivationCode(jsonData string, privateKey *rsa.PrivateKey) (string
 
 	// 3. Base64 URL-safe（无 padding）
 	base64Str := base64.RawURLEncoding.EncodeToString(buf.Bytes())
-	log.Printf("Base64编码后长度: %d", len(base64Str))
 
 	// 4. 格式化
 	return formatActivationCode(base64Str), nil
@@ -213,19 +208,19 @@ func VerifySignature(
 	signature []byte,
 	publicKey *rsa.PublicKey,
 ) error {
-
-	log.Printf("开始验证签名, 数据长度: %d, 签名长度: %d",
-		len(data), len(signature))
-
 	hashed := sha256.Sum256(data)
-
-	err := rsa.VerifyPKCS1v15(
+	return rsa.VerifyPKCS1v15(
 		publicKey,
 		crypto.SHA256,
 		hashed[:],
 		signature,
 	)
+}
 
-	log.Printf("签名验证结果: %v", err == nil)
-	return err
+func getMasterKey() string {
+	key := strings.TrimSpace(os.Getenv("LICENSE_MASTER_KEY"))
+	if key != "" {
+		return key
+	}
+	return defaultMasterKey
 }

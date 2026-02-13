@@ -11,6 +11,8 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+const contextUserIDKey = "userID"
+
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.Request.Header.Get("Authorization")
@@ -29,9 +31,43 @@ func AuthMiddleware() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			c.Set("userID", token.Claims.(jwt.MapClaims)["sub"])
+			claims, ok := token.Claims.(jwt.MapClaims)
+			if !ok {
+				c.JSON(http.StatusUnauthorized, http2.BaseResponse[any]{
+					Code:    http.StatusUnauthorized,
+					Message: "Invalid token claims",
+				})
+				c.Abort()
+				return
+			}
+			sub, ok := claims["sub"].(string)
+			if !ok || strings.TrimSpace(sub) == "" {
+				c.JSON(http.StatusUnauthorized, http2.BaseResponse[any]{
+					Code:    http.StatusUnauthorized,
+					Message: "Invalid token subject",
+				})
+				c.Abort()
+				return
+			}
+			c.Set(contextUserIDKey, sub)
 		}
 
+		c.Next()
+	}
+}
+
+func RequireAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID, ok := c.Get(contextUserIDKey)
+		userIDStr, typeOK := userID.(string)
+		if !ok || !typeOK || strings.TrimSpace(userIDStr) == "" {
+			c.JSON(http.StatusUnauthorized, http2.BaseResponse[any]{
+				Code:    http.StatusUnauthorized,
+				Message: "Authentication required",
+			})
+			c.Abort()
+			return
+		}
 		c.Next()
 	}
 }

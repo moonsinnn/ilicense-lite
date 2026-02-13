@@ -1,27 +1,18 @@
-import { getHeader, readBody } from 'h3'
+import { readBody } from 'h3'
 import type { ApiMessageResponse } from '~/types/api'
 import type { UserPasswordUpdateBody } from '~/types/user'
+import { backendFetch, ensureApiSuccess } from '~~/server/utils/backend'
 
 export default eventHandler(async (event) => {
-  const config = useRuntimeConfig()
-  const authorization = getHeader(event, 'authorization')
   const body = await readBody<UserPasswordUpdateBody>(event)
 
-  const response = await $fetch<ApiMessageResponse>(`${config.apiBase}/api/user/password/update`, {
+  const response = await backendFetch<ApiMessageResponse>(event, '/api/user/password/update', {
     method: 'POST',
-    headers: authorization ? { Authorization: authorization } : {},
     body: {
       old_password: body?.old_password,
       new_password: body?.new_password
     }
   })
 
-  if (response.code !== 0) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: response.message || 'Update password failed'
-    })
-  }
-
-  return response
+  return ensureApiSuccess(response, 'Update password failed', 400)
 })

@@ -8,7 +8,7 @@ type Issuer struct {
 	Code         string    `gorm:"column:code;" json:"code" example:"issuer-a-code"`                      // 代码, 唯一标识
 	Description  string    `gorm:"column:description;" json:"description" example:"issuer-a-description"` // 描述
 	PublicKey    string    `gorm:"column:public_key;" json:"public_key" example:"xxx"`                    // 公钥
-	PrivateKey   string    `gorm:"column:private_key;" json:"private_key" example:"xxx"`                  // 私钥
+	PrivateKey   string    `gorm:"column:private_key;" json:"-" example:"xxx"`                            // 私钥
 	KeyAlgorithm string    `gorm:"column:key_algorithm;" json:"key_algorithm" example:"xxx"`              // 加密算法
 	KeySize      int       `gorm:"column:key_size;" json:"key_size" example:"10"`                         // 密钥长度
 	Status       *uint8    `gorm:"column:status;default:1" json:"status" example:"1"`                     // 状态: 1启用, 0禁用

@@ -1,12 +1,12 @@
 import { readBody } from 'h3'
 import type { ApiResponse } from '~/types/api'
 import type { Issuer, IssuerAddBody } from '~/types/issuer'
+import { backendFetch, ensureApiSuccess } from '~~/server/utils/backend'
 
 export default eventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const body = await readBody<IssuerAddBody>(event)
 
-  const response = await $fetch<ApiResponse<Issuer>>(`${config.apiBase}/api/issuer/add`, {
+  const response = await backendFetch<ApiResponse<Issuer>>(event, '/api/issuer/add', {
     method: 'POST',
     body: {
       code: body?.code,
@@ -15,12 +15,5 @@ export default eventHandler(async (event) => {
     }
   })
 
-  if (response.code !== 0) {
-    throw createError({
-      statusCode: 502,
-      statusMessage: response.message || 'Issuer add failed'
-    })
-  }
-
-  return response
+  return ensureApiSuccess(response, 'Issuer add failed', 502)
 })

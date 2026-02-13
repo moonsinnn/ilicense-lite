@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"ilicense-lite/bootstrap/logger"
 	"ilicense-lite/dao"
 	"ilicense-lite/type/input"
 	"ilicense-lite/type/model"
@@ -25,7 +24,6 @@ func (this *CustomerService) CustomerDelete(ctx context.Context, in *input.Custo
 	return this.customerDao.CustomerDelete(ctx, in.IDs)
 }
 func (this *CustomerService) CustomerGet(ctx context.Context, in *input.CustomerGetInput) (interface{}, error) {
-	logger.ServiceLogger.WithContext(ctx).Infof("********%+v", "test")
 	return this.customerDao.CustomerGet(ctx, in.ID)
 }
 func (this *CustomerService) CustomerAdd(ctx context.Context, in *input.CustomerAddInput) (interface{}, error) {

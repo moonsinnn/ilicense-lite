@@ -1,0 +1,38 @@
+name: Feature Request
+description: Suggest an idea for this project
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem are you trying to solve?
+      placeholder: Describe the user or engineering pain point.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution
+      description: Describe your preferred solution.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any alternatives or trade-offs.
+    validations:
+      required: false
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Scope and Impact
+      description: Which modules are affected (`app`, `web`, database, API)?
+    validations:
+      required: false

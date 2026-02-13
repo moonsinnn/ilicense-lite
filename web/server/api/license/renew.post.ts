@@ -1,12 +1,12 @@
 import { readBody } from 'h3'
 import type { ApiResponse } from '~/types/api'
 import type { License, LicenseRenewBody } from '~/types/license'
+import { backendFetch, ensureApiSuccess } from '~~/server/utils/backend'
 
 export default eventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const body = await readBody<LicenseRenewBody>(event)
 
-  const response = await $fetch<ApiResponse<License>>(`${config.apiBase}/api/license/renew`, {
+  const response = await backendFetch<ApiResponse<License>>(event, '/api/license/renew', {
     method: 'POST',
     body: {
       id: body?.id,
@@ -15,12 +15,5 @@ export default eventHandler(async (event) => {
     }
   })
 
-  if (response.code !== 0) {
-    throw createError({
-      statusCode: 502,
-      statusMessage: response.message || 'License renew failed'
-    })
-  }
-
-  return response
+  return ensureApiSuccess(response, 'License renew failed', 502)
 })

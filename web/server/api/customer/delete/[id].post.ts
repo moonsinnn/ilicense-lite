@@ -1,7 +1,7 @@
 import type { ApiMessageResponse } from '~/types/api'
+import { backendFetch, ensureApiSuccess } from '~~/server/utils/backend'
 
 export default eventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const id = getRouterParam(event, 'id')
 
   if (!id || !/^\d+$/.test(id)) {
@@ -11,16 +11,9 @@ export default eventHandler(async (event) => {
     })
   }
 
-  const response = await $fetch<ApiMessageResponse>(`${config.apiBase}/api/customer/delete/${id}`, {
+  const response = await backendFetch<ApiMessageResponse>(event, `/api/customer/delete/${id}`, {
     method: 'POST'
   })
 
-  if (response.code !== 0) {
-    throw createError({
-      statusCode: 502,
-      statusMessage: response.message || 'Customer delete failed'
-    })
-  }
-
-  return response
+  return ensureApiSuccess(response, 'Customer delete failed', 502)
 })

@@ -1,12 +1,12 @@
 import { readBody } from 'h3'
 import type { ApiResponse } from '~/types/api'
 import type { UserLoginBody, UserLoginData } from '~/types/user'
+import { backendFetch, ensureApiSuccess } from '~~/server/utils/backend'
 
 export default eventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const body = await readBody<UserLoginBody>(event)
 
-  const response = await $fetch<ApiResponse<UserLoginData>>(`${config.apiBase}/api/user/login`, {
+  const response = await backendFetch<ApiResponse<UserLoginData>>(event, '/api/user/login', {
     method: 'POST',
     body: {
       username: body?.username,
@@ -14,12 +14,5 @@ export default eventHandler(async (event) => {
     }
   })
 
-  if (response.code !== 0) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: response.message || 'Login failed'
-    })
-  }
-
-  return response
+  return ensureApiSuccess(response, 'Login failed', 401)
 })

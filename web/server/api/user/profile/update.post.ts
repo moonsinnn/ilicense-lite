@@ -1,15 +1,13 @@
-import { getHeader, readBody } from 'h3'
+import { readBody } from 'h3'
 import type { ApiResponse } from '~/types/api'
 import type { UserProfile, UserProfileUpdateBody } from '~/types/user'
+import { backendFetch, ensureApiSuccess } from '~~/server/utils/backend'
 
 export default eventHandler(async (event) => {
-  const config = useRuntimeConfig()
-  const authorization = getHeader(event, 'authorization')
   const body = await readBody<UserProfileUpdateBody>(event)
 
-  const response = await $fetch<ApiResponse<UserProfile>>(`${config.apiBase}/api/user/profile/update`, {
+  const response = await backendFetch<ApiResponse<UserProfile>>(event, '/api/user/profile/update', {
     method: 'POST',
-    headers: authorization ? { Authorization: authorization } : {},
     body: {
       name: body?.name,
       email: body?.email,
@@ -17,12 +15,5 @@ export default eventHandler(async (event) => {
     }
   })
 
-  if (response.code !== 0) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: response.message || 'Update profile failed'
-    })
-  }
-
-  return response
+  return ensureApiSuccess(response, 'Update profile failed', 400)
 })

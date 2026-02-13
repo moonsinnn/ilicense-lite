@@ -1,30 +1,30 @@
 app:
   name: gin-app
   port: 8080
-  jwt_secret: "secret-dev"
+  jwt_secret: "replace-with-strong-secret"
 
 log:
   name: gin-app
-  level: debug
+  level: info
   model: file
   dir: logs
 
 mysql_demo:
   log_file: "logs/sql.log"
   log_slow_threshold: 1000
-  colorful: true
+  colorful: false
   data_source:
     db_driver: "mysql"
     db_name: "demo"
     user_name: "root"
-    password: "123456"
+    password: "replace-with-db-password"
     address: "127.0.0.1:3306"
-    conn_timeout: 1000 #ms
+    conn_timeout: 1000
     read_timeout: 1000
     write_timeout: 1000
     max_open_conn: 10
     max_idle_conn: 10
-    conn_max_life_time: 1000 # 单位 ms
+    conn_max_life_time: 1000
     params:
       - key: "charset"
         value: "utf8mb4"

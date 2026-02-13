@@ -1,12 +1,12 @@
 import { readBody } from 'h3'
 import type { ApiResponse } from '~/types/api'
 import type { Customer, CustomerAddBody } from '~/types/customer'
+import { backendFetch, ensureApiSuccess } from '~~/server/utils/backend'
 
 export default eventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const body = await readBody<CustomerAddBody>(event)
 
-  const response = await $fetch<ApiResponse<Customer>>(`${config.apiBase}/api/customer/add`, {
+  const response = await backendFetch<ApiResponse<Customer>>(event, '/api/customer/add', {
     method: 'POST',
     body: {
       code: body?.code,
@@ -18,12 +18,5 @@ export default eventHandler(async (event) => {
     }
   })
 
-  if (response.code !== 0) {
-    throw createError({
-      statusCode: 502,
-      statusMessage: response.message || 'Customer add failed'
-    })
-  }
-
-  return response
+  return ensureApiSuccess(response, 'Customer add failed', 502)
 })

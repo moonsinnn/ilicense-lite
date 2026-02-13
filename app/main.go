@@ -30,7 +30,6 @@ func main() {
 	r.Use(otelgin.Middleware("ilicense-lite"))
 	r.Use(middleware.MetricsMiddleware())
 	r.Use(middleware.PrometheusMiddleware())
-	r.Use(gin.Logger())
 	r.Use(middleware.LoggerMiddleware())
 	r.Use(middleware.RecoveryMiddleware())
 	r.Use(cors.Default())

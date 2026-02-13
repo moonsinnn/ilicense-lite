@@ -1,12 +1,12 @@
 import { readBody } from 'h3'
 import type { ApiResponse } from '~/types/api'
 import type { License, LicenseAddBody } from '~/types/license'
+import { backendFetch, ensureApiSuccess } from '~~/server/utils/backend'
 
 export default eventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const body = await readBody<LicenseAddBody>(event)
 
-  const response = await $fetch<ApiResponse<License>>(`${config.apiBase}/api/license/add`, {
+  const response = await backendFetch<ApiResponse<License>>(event, '/api/license/add', {
     method: 'POST',
     body: {
       code: body?.code,
@@ -20,12 +20,5 @@ export default eventHandler(async (event) => {
     }
   })
 
-  if (response.code !== 0) {
-    throw createError({
-      statusCode: 502,
-      statusMessage: response.message || 'License add failed'
-    })
-  }
-
-  return response
+  return ensureApiSuccess(response, 'License add failed', 502)
 })

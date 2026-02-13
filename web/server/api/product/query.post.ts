@@ -1,15 +1,15 @@
 import { readBody } from 'h3'
 import type { ApiResponse } from '~/types/api'
 import type { ProductQueryBody, ProductQueryData } from '~/types/product'
+import { backendFetch, ensureApiSuccess } from '~~/server/utils/backend'
 
 export default eventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const body = await readBody<ProductQueryBody>(event)
 
   const page = Number(body?.page) > 0 ? Number(body?.page) : 1
   const size = Number(body?.size) > 0 ? Number(body?.size) : 10
 
-  const response = await $fetch<ApiResponse<ProductQueryData>>(`${config.apiBase}/api/product/query`, {
+  const response = await backendFetch<ApiResponse<ProductQueryData>>(event, '/api/product/query', {
     method: 'POST',
     body: {
       page,
@@ -17,12 +17,5 @@ export default eventHandler(async (event) => {
     }
   })
 
-  if (response.code !== 0) {
-    throw createError({
-      statusCode: 502,
-      statusMessage: response.message || 'Product query failed'
-    })
-  }
-
-  return response
+  return ensureApiSuccess(response, 'Product query failed', 502)
 })
