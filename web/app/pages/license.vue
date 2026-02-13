@@ -3,13 +3,17 @@ import type { TableColumn } from '@nuxt/ui'
 import { upperFirst } from 'scule'
 import type { Row, Table as TanStackTable } from '@tanstack/table-core'
 import type { ApiMessageResponse, ApiResponse } from '~/types/api'
-import type { License, LicenseQueryData } from '~/types/license'
+import type { License, LicenseActivateData, LicenseQueryData } from '~/types/license'
 import dayjs from 'dayjs'
 
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 const UCheckbox = resolveComponent('UCheckbox')
+
+useSeoMeta({
+  title: '许可证管理'
+})
 
 const toast = useToast()
 const table = useTemplateRef<{ tableApi?: TanStackTable<License> }>('table')
@@ -108,6 +112,35 @@ async function onRenewSuccess() {
   await refreshNuxtData('license-query')
 }
 
+async function testActivateLicense(row: Row<License>) {
+  try {
+    const response = await $fetch<ApiResponse<LicenseActivateData>>('/api/license/activate', {
+      method: 'POST',
+      body: {
+        issuer_id: row.original.issuer_id,
+        code: row.original.activation_code.replace(/\s+/g, '')
+      }
+    })
+
+    if (response.code !== 0) {
+      throw new Error(response.message || '激活失败')
+    }
+
+    const activationData = response.data
+    toast.add({
+      title: activationData.ok ? '激活测试成功' : '激活测试失败',
+      description: `产品: ${activationData.product_name}, 过期时间: ${dayjs(activationData.expire_at).format('YYYY-MM-DD HH:mm:ss')}`,
+      color: activationData.ok ? 'success' : 'warning'
+    })
+  } catch (error) {
+    toast.add({
+      title: '激活测试失败',
+      description: error instanceof Error ? error.message : '请求失败，请稍后重试',
+      color: 'error'
+    })
+  }
+}
+
 function getRowItems(row: Row<License>) {
   return [
     {
@@ -130,6 +163,13 @@ function getRowItems(row: Row<License>) {
       icon: 'i-lucide-refresh-cw',
       onSelect() {
         requestRenewLicense(row)
+      }
+    },
+    {
+      label: '测试激活',
+      icon: 'i-lucide-play-circle',
+      onSelect() {
+        testActivateLicense(row)
       }
     },
     {
@@ -287,7 +327,7 @@ const code = computed({
 <template>
   <UDashboardPanel id="license">
     <template #header>
-      <UDashboardNavbar title="License">
+      <UDashboardNavbar title="许可证管理">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -304,7 +344,7 @@ const code = computed({
           v-model="code"
           class="max-w-sm"
           icon="i-lucide-search"
-          placeholder="Filter code..."
+          placeholder="按编码搜索..."
         />
 
         <div class="flex flex-wrap items-center gap-1.5">
@@ -332,7 +372,7 @@ const code = computed({
               { label: '无效', value: 0 }
             ]"
             :ui="{ trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
-            placeholder="Filter status"
+            placeholder="筛选状态"
             class="min-w-28"
           />
           <UDropdownMenu
@@ -385,8 +425,8 @@ const code = computed({
 
       <div class="flex items-center justify-between gap-3 border-t border-default pt-4 mt-auto">
         <div class="text-sm text-muted">
-          {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
-          {{ total }} row(s) total.
+          已选择 {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} 条，共
+          {{ total }} 条数据。
         </div>
 
         <div class="flex items-center gap-1.5">

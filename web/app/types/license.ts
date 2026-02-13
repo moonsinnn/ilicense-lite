@@ -45,3 +45,23 @@ export interface LicenseRenewBody {
   expire_at: string
   remarks: string
 }
+
+export interface LicenseActivateBody {
+  issuer_id: number
+  code: string
+}
+
+export interface LicenseActivateData {
+  issuer_code: string
+  issuer_name: string
+  customer_code: string
+  customer_name: string
+  product_code: string
+  product_name: string
+  license_code: string
+  issue_at: string
+  expire_at: string
+  modules: string
+  max_instances: number
+  ok: boolean
+}

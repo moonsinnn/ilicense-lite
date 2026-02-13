@@ -120,7 +120,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       throw new Error(response.message || '创建许可证失败')
     }
 
-    toast.add({ title: 'Success', description: `新的许可证 ${response.data.code} 被添加`, color: 'success' })
+    toast.add({ title: '成功', description: `新的许可证 ${response.data.code} 已添加`, color: 'success' })
     open.value = false
     state.code = ''
     state.product_id = undefined

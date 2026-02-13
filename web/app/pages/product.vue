@@ -11,6 +11,10 @@ const UBadge = resolveComponent('UBadge')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 const UCheckbox = resolveComponent('UCheckbox')
 
+useSeoMeta({
+  title: '产品管理'
+})
+
 const toast = useToast()
 const table = useTemplateRef<{ tableApi?: TanStackTable<Product> }>('table')
 
@@ -79,7 +83,7 @@ async function confirmDeleteOneProduct() {
 
     toast.add({
       title: '删除成功',
-      description: `机构 ${singleDeleteProduct.value.name} 已删除`,
+      description: `产品 ${singleDeleteProduct.value.name} 已删除`,
       color: 'success'
     })
     singleDeleteOpen.value = false
@@ -236,7 +240,7 @@ const code = computed({
 <template>
   <UDashboardPanel id="product">
     <template #header>
-      <UDashboardNavbar title="Product">
+      <UDashboardNavbar title="产品管理">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -253,7 +257,7 @@ const code = computed({
           v-model="code"
           class="max-w-sm"
           icon="i-lucide-search"
-          placeholder="Filter code..."
+          placeholder="按编码搜索..."
         />
 
         <div class="flex flex-wrap items-center gap-1.5">
@@ -281,7 +285,7 @@ const code = computed({
               { label: '无效', value: 0 }
             ]"
             :ui="{ trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
-            placeholder="Filter status"
+            placeholder="筛选状态"
             class="min-w-28"
           />
           <UDropdownMenu
@@ -334,8 +338,8 @@ const code = computed({
 
       <div class="flex items-center justify-between gap-3 border-t border-default pt-4 mt-auto">
         <div class="text-sm text-muted">
-          {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
-          {{ total }} row(s) total.
+          已选择 {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} 条，共
+          {{ total }} 条数据。
         </div>
 
         <div class="flex items-center gap-1.5">
@@ -350,7 +354,7 @@ const code = computed({
 
       <UModal
         v-model:open="singleDeleteOpen"
-        :title="`删除机构 ${singleDeleteProduct?.name || ''}`"
+        :title="`删除产品 ${singleDeleteProduct?.name || ''}`"
         description="你确定吗, 该项目操作不可恢复."
       >
         <template #body>

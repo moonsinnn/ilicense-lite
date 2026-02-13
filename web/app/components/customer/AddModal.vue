@@ -43,7 +43,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       throw new Error(response.message || '创建客户失败')
     }
 
-    toast.add({ title: 'Success', description: `新的客户 ${event.data.name} 被添加`, color: 'success' })
+    toast.add({ title: '成功', description: `新的客户 ${event.data.name} 已添加`, color: 'success' })
     open.value = false
     state.code = ''
     state.name = ''
@@ -78,19 +78,19 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         <UFormField label="编码" placeholder="iss-xxx" name="code">
           <UInput v-model="state.code" class="w-full" />
         </UFormField>
-        <UFormField label="名称" placeholder="John Doe" name="name">
+        <UFormField label="名称" placeholder="请输入客户名称" name="name">
           <UInput v-model="state.name" class="w-full" />
         </UFormField>
-        <UFormField label="联系人" placeholder="John Doe" name="contact">
+        <UFormField label="联系人" placeholder="请输入联系人" name="contact">
           <UInput v-model="state.contact" class="w-full" />
         </UFormField>
-        <UFormField label="联系电话" placeholder="John Doe" name="phone">
+        <UFormField label="联系电话" placeholder="请输入联系电话" name="phone">
           <UInput v-model="state.phone" class="w-full" />
         </UFormField>
-        <UFormField label="联系邮箱" placeholder="John Doe" name="email">
+        <UFormField label="联系邮箱" placeholder="请输入联系邮箱" name="email">
           <UInput v-model="state.email" class="w-full" />
         </UFormField>
-        <UFormField label="联系地址" placeholder="John Doe" name="address">
+        <UFormField label="联系地址" placeholder="请输入联系地址" name="address">
           <UInput v-model="state.address" class="w-full" />
         </UFormField>
         <div class="flex justify-end gap-2">

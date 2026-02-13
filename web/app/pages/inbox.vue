@@ -3,11 +3,15 @@ import { computed, ref, watch } from 'vue'
 import { breakpointsTailwind } from '@vueuse/core'
 import type { Mail } from '~/types'
 
+useSeoMeta({
+  title: '收件箱'
+})
+
 const tabItems = [{
-  label: 'All',
+  label: '全部',
   value: 'all'
 }, {
-  label: 'Unread',
+  label: '未读',
   value: 'unread'
 }]
 const selectedTab = ref('all')
@@ -55,7 +59,7 @@ const isMobile = breakpoints.smaller('lg')
     :max-size="30"
     resizable
   >
-    <UDashboardNavbar title="Inbox">
+    <UDashboardNavbar title="收件箱">
       <template #leading>
         <UDashboardSidebarCollapse />
       </template>

@@ -9,16 +9,16 @@ defineProps<{
 const emits = defineEmits(['close'])
 
 const dropdownItems = [[{
-  label: 'Mark as unread',
+  label: '标记为未读',
   icon: 'i-lucide-check-circle'
 }, {
-  label: 'Mark as important',
+  label: '标记为重要',
   icon: 'i-lucide-triangle-alert'
 }], [{
-  label: 'Star thread',
+  label: '收藏会话',
   icon: 'i-lucide-star'
 }, {
-  label: 'Mute thread',
+  label: '静音会话',
   icon: 'i-lucide-circle-pause'
 }]]
 
@@ -34,8 +34,8 @@ function onSubmit() {
     reply.value = ''
 
     toast.add({
-      title: 'Email sent',
-      description: 'Your email has been sent successfully',
+      title: '发送成功',
+      description: '你的邮件已发送',
       icon: 'i-lucide-check-circle',
       color: 'success'
     })
@@ -59,7 +59,7 @@ function onSubmit() {
       </template>
 
       <template #right>
-        <UTooltip text="Archive">
+        <UTooltip text="归档">
           <UButton
             icon="i-lucide-inbox"
             color="neutral"
@@ -67,7 +67,7 @@ function onSubmit() {
           />
         </UTooltip>
 
-        <UTooltip text="Reply">
+        <UTooltip text="回复">
           <UButton icon="i-lucide-reply" color="neutral" variant="ghost" />
         </UTooltip>
 
@@ -116,7 +116,7 @@ function onSubmit() {
           <UIcon name="i-lucide-reply" class="size-5" />
 
           <span class="text-sm truncate">
-            Reply to {{ mail.from.name }} ({{ mail.from.email }})
+            回复 {{ mail.from.name }}（{{ mail.from.email }}）
           </span>
         </template>
 
@@ -127,7 +127,7 @@ function onSubmit() {
             variant="none"
             required
             autoresize
-            placeholder="Write your reply..."
+            placeholder="请输入回复内容..."
             :rows="4"
             :disabled="loading"
             class="w-full"
@@ -135,7 +135,7 @@ function onSubmit() {
           />
 
           <div class="flex items-center justify-between">
-            <UTooltip text="Attach file">
+            <UTooltip text="添加附件">
               <UButton
                 color="neutral"
                 variant="ghost"
@@ -147,13 +147,13 @@ function onSubmit() {
               <UButton
                 color="neutral"
                 variant="ghost"
-                label="Save draft"
+                label="保存草稿"
               />
               <UButton
                 type="submit"
                 color="neutral"
                 :loading="loading"
-                label="Send"
+                label="发送"
                 icon="i-lucide-send"
               />
             </div>

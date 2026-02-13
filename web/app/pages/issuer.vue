@@ -11,6 +11,10 @@ const UBadge = resolveComponent('UBadge')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 const UCheckbox = resolveComponent('UCheckbox')
 
+useSeoMeta({
+  title: '机构管理'
+})
+
 const toast = useToast()
 const table = useTemplateRef<{ tableApi?: TanStackTable<Issuer> }>('table')
 
@@ -268,7 +272,7 @@ const code = computed({
 <template>
   <UDashboardPanel id="issuer">
     <template #header>
-      <UDashboardNavbar title="Issuer">
+      <UDashboardNavbar title="机构管理">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -285,7 +289,7 @@ const code = computed({
           v-model="code"
           class="max-w-sm"
           icon="i-lucide-search"
-          placeholder="Filter code..."
+          placeholder="按编码搜索..."
         />
 
         <div class="flex flex-wrap items-center gap-1.5">
@@ -313,7 +317,7 @@ const code = computed({
               { label: '无效', value: 0 }
             ]"
             :ui="{ trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
-            placeholder="Filter status"
+            placeholder="筛选状态"
             class="min-w-28"
           />
           <UDropdownMenu
@@ -366,8 +370,8 @@ const code = computed({
 
       <div class="flex items-center justify-between gap-3 border-t border-default pt-4 mt-auto">
         <div class="text-sm text-muted">
-          {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
-          {{ total }} row(s) total.
+          已选择 {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} 条，共
+          {{ total }} 条数据。
         </div>
 
         <div class="flex items-center gap-1.5">

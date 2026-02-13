@@ -11,6 +11,10 @@ const UBadge = resolveComponent('UBadge')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 const UCheckbox = resolveComponent('UCheckbox')
 
+useSeoMeta({
+  title: '客户管理'
+})
+
 const toast = useToast()
 const table = useTemplateRef<{ tableApi?: TanStackTable<Customer> }>('table')
 
@@ -248,7 +252,7 @@ const email = computed({
 <template>
   <UDashboardPanel id="customer">
     <template #header>
-      <UDashboardNavbar title="Customer">
+      <UDashboardNavbar title="客户管理">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -265,7 +269,7 @@ const email = computed({
           v-model="email"
           class="max-w-sm"
           icon="i-lucide-search"
-          placeholder="Filter email..."
+          placeholder="按邮箱搜索..."
         />
 
         <div class="flex flex-wrap items-center gap-1.5">
@@ -293,7 +297,7 @@ const email = computed({
               { label: '无效', value: 0 }
             ]"
             :ui="{ trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
-            placeholder="Filter status"
+            placeholder="筛选状态"
             class="min-w-28"
           />
           <UDropdownMenu
@@ -346,8 +350,8 @@ const email = computed({
 
       <div class="flex items-center justify-between gap-3 border-t border-default pt-4 mt-auto">
         <div class="text-sm text-muted">
-          {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
-          {{ total }} row(s) total.
+          已选择 {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} 条，共
+          {{ total }} 条数据。
         </div>
 
         <div class="flex items-center gap-1.5">

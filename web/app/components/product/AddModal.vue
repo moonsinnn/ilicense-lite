@@ -31,10 +31,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     })
 
     if (response.code !== 0) {
-      throw new Error(response.message || '创建机构失败')
+      throw new Error(response.message || '创建产品失败')
     }
 
-    toast.add({ title: 'Success', description: `新的机构 ${event.data.name} 被添加`, color: 'success' })
+    toast.add({ title: '成功', description: `新的产品 ${event.data.name} 已添加`, color: 'success' })
     open.value = false
     state.code = ''
     state.name = ''
@@ -66,7 +66,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         <UFormField label="编码" placeholder="iss-xxx" name="code">
           <UInput v-model="state.code" class="w-full" />
         </UFormField>
-        <UFormField label="名称" placeholder="John Doe" name="name">
+        <UFormField label="名称" placeholder="请输入产品名称" name="name">
           <UInput v-model="state.name" class="w-full" />
         </UFormField>
         <UFormField label="描述" placeholder="描述是什么样的产品" name="description">

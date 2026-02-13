@@ -28,7 +28,7 @@ async function onSubmit() {
       throw new Error(response.message || '删除失败')
     }
 
-    toast.add({ title: '删除成功', description: `已删除 ${props.ids.length} 条机构`, color: 'success' })
+    toast.add({ title: '删除成功', description: `已删除 ${props.ids.length} 条许可证`, color: 'success' })
 
     open.value = false
     await refreshNuxtData('license-query')

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: '通知设置'
+})
+
 const state = reactive<{ [key: string]: boolean }>({
   email: true,
   desktop: false,
@@ -8,32 +12,32 @@ const state = reactive<{ [key: string]: boolean }>({
 })
 
 const sections = [{
-  title: 'Notification channels',
-  description: 'Where can we notify you?',
+  title: '通知渠道',
+  description: '你希望通过哪些方式接收通知？',
   fields: [{
     name: 'email',
-    label: 'Email',
-    description: 'Receive a daily email digest.'
+    label: '邮件',
+    description: '接收每日邮件摘要。'
   }, {
     name: 'desktop',
-    label: 'Desktop',
-    description: 'Receive desktop notifications.'
+    label: '桌面通知',
+    description: '接收桌面通知。'
   }]
 }, {
-  title: 'Account updates',
-  description: 'Receive updates about Nuxt UI.',
+  title: '账号更新',
+  description: '接收系统功能与账号相关更新。',
   fields: [{
     name: 'weekly_digest',
-    label: 'Weekly digest',
-    description: 'Receive a weekly digest of news.'
+    label: '每周摘要',
+    description: '每周接收一次动态摘要。'
   }, {
     name: 'product_updates',
-    label: 'Product updates',
-    description: 'Receive a monthly email with all new features and updates.'
+    label: '产品更新',
+    description: '每月接收新功能与更新汇总邮件。'
   }, {
     name: 'important_updates',
-    label: 'Important updates',
-    description: 'Receive emails about important updates like security fixes, maintenance, etc.'
+    label: '重要通知',
+    description: '接收安全修复、维护等重要更新邮件。'
   }]
 }]
 

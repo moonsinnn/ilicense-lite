@@ -30,6 +30,11 @@ const periods = computed<Period[]>(() => {
   ]
 })
 
+const periodItems = computed(() => periods.value.map(period => ({
+  value: period,
+  label: period === 'daily' ? '按日' : period === 'weekly' ? '按周' : '按月'
+})))
+
 // Ensure the model value is always a valid period
 watch(periods, () => {
   if (!periods.value.includes(model.value)) {
@@ -41,9 +46,9 @@ watch(periods, () => {
 <template>
   <USelect
     v-model="model"
-    :items="periods"
+    :items="periodItems"
     variant="ghost"
     class="data-[state=open]:bg-elevated"
-    :ui="{ value: 'capitalize', itemLabel: 'capitalize', trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
+    :ui="{ trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
   />
 </template>

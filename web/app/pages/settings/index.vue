@@ -2,34 +2,75 @@
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
+useSeoMeta({
+  title: '通用设置'
+})
+
 const fileRef = ref<HTMLInputElement>()
+const { user, fetchProfile, updateProfile } = useAuth()
+const loading = ref(false)
 
 const profileSchema = z.object({
-  name: z.string().min(2, 'Too short'),
-  email: z.string().email('Invalid email'),
-  username: z.string().min(2, 'Too short'),
-  avatar: z.string().optional(),
-  bio: z.string().optional()
+  name: z.string().min(2, '至少 2 个字符'),
+  email: z.string().email('邮箱格式不正确'),
+  username: z.string().min(2, '至少 2 个字符'),
+  avatar: z.string().optional()
 })
 
 type ProfileSchema = z.output<typeof profileSchema>
 
 const profile = reactive<Partial<ProfileSchema>>({
-  name: 'Benjamin Canac',
-  email: 'ben@nuxtlabs.com',
-  username: 'benjamincanac',
-  avatar: undefined,
-  bio: undefined
+  name: '',
+  email: '',
+  username: '',
+  avatar: undefined
 })
 const toast = useToast()
+
+onMounted(async () => {
+  try {
+    const data = await fetchProfile()
+    if (data) {
+      profile.name = data.name
+      profile.email = data.email
+      profile.username = data.username
+      profile.avatar = data.avatar || undefined
+    }
+  } catch {
+    toast.add({
+      title: '获取资料失败',
+      description: '请重新登录后重试',
+      color: 'error'
+    })
+  }
+})
+
 async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
-  toast.add({
-    title: 'Success',
-    description: 'Your settings have been updated.',
-    icon: 'i-lucide-check',
-    color: 'success'
-  })
-  console.log(event.data)
+  try {
+    loading.value = true
+    await updateProfile({
+      name: event.data.name,
+      email: event.data.email,
+      avatar: profile.avatar
+    })
+    if (user.value) {
+      profile.username = user.value.username
+    }
+    toast.add({
+      title: '保存成功',
+      description: '设置已更新。',
+      icon: 'i-lucide-check',
+      color: 'success'
+    })
+  } catch (error) {
+    toast.add({
+      title: '保存失败',
+      description: error instanceof Error ? error.message : '请求失败，请稍后重试',
+      color: 'error'
+    })
+  } finally {
+    loading.value = false
+  }
 }
 
 function onFileChange(e: Event) {
@@ -55,26 +96,28 @@ function onFileClick() {
     @submit="onSubmit"
   >
     <UPageCard
-      title="Profile"
-      description="These informations will be displayed publicly."
+      title="个人资料"
+      description="以下信息将公开展示。"
       variant="naked"
       orientation="horizontal"
       class="mb-4"
     >
       <UButton
         form="settings"
-        label="Save changes"
+        label="保存更改"
         color="neutral"
         type="submit"
         class="w-fit lg:ms-auto"
+        :loading="loading"
+        :disabled="loading"
       />
     </UPageCard>
 
     <UPageCard variant="subtle">
       <UFormField
         name="name"
-        label="Name"
-        description="Will appear on receipts, invoices, and other communication."
+        label="姓名"
+        description="将显示在收据、发票和其他通知中。"
         required
         class="flex max-sm:flex-col justify-between items-start gap-4"
       >
@@ -86,8 +129,8 @@ function onFileClick() {
       <USeparator />
       <UFormField
         name="email"
-        label="Email"
-        description="Used to sign in, for email receipts and product updates."
+        label="邮箱"
+        description="用于登录、收据邮件和产品更新通知。"
         required
         class="flex max-sm:flex-col justify-between items-start gap-4"
       >
@@ -100,8 +143,8 @@ function onFileClick() {
       <USeparator />
       <UFormField
         name="username"
-        label="Username"
-        description="Your unique username for logging in and your profile URL."
+        label="用户名"
+        description="用于登录和个人主页链接的唯一用户名。"
         required
         class="flex max-sm:flex-col justify-between items-start gap-4"
       >
@@ -114,8 +157,8 @@ function onFileClick() {
       <USeparator />
       <UFormField
         name="avatar"
-        label="Avatar"
-        description="JPG, GIF or PNG. 1MB Max."
+        label="头像"
+        description="支持 JPG、GIF、PNG，最大 1MB。"
         class="flex max-sm:flex-col justify-between sm:items-center gap-4"
       >
         <div class="flex flex-wrap items-center gap-3">
@@ -125,7 +168,7 @@ function onFileClick() {
             size="lg"
           />
           <UButton
-            label="Choose"
+            label="选择文件"
             color="neutral"
             @click="onFileClick"
           />
@@ -137,21 +180,6 @@ function onFileClick() {
             @change="onFileChange"
           >
         </div>
-      </UFormField>
-      <USeparator />
-      <UFormField
-        name="bio"
-        label="Bio"
-        description="Brief description for your profile. URLs are hyperlinked."
-        class="flex max-sm:flex-col justify-between items-start gap-4"
-        :ui="{ container: 'w-full' }"
-      >
-        <UTextarea
-          v-model="profile.bio"
-          :rows="5"
-          autoresize
-          class="w-full"
-        />
       </UFormField>
     </UPageCard>
   </UForm>
