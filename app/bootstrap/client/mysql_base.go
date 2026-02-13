@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
-var MysqlDemo *gorm.DB
+var MysqlDB *gorm.DB
 
 func InitMysqlClient() {
-	MysqlDemo = mysql.InitMysql(config.Config.MysqlDemo)
+	MysqlDB = mysql.InitMysql(config.Config.MysqlDB)
 }

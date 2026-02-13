@@ -19,7 +19,7 @@ func NewIssuerDao() *IssuerDao {
 }
 func (*IssuerDao) IssuerGet(ctx context.Context, id uint64) (*model.Issuer, error) {
 	m := &model.Issuer{ID: id}
-	if err := client.MysqlDemo.WithContext(ctx).First(m).Error; err != nil {
+	if err := client.MysqlDB.WithContext(ctx).First(m).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -29,19 +29,19 @@ func (*IssuerDao) IssuerGet(ctx context.Context, id uint64) (*model.Issuer, erro
 }
 
 func (*IssuerDao) IssuerDeleteOne(ctx context.Context, id uint64) error {
-	if err := client.MysqlDemo.WithContext(ctx).Delete(&model.Issuer{ID: id}).Error; err != nil {
+	if err := client.MysqlDB.WithContext(ctx).Delete(&model.Issuer{ID: id}).Error; err != nil {
 		return err
 	}
 	return nil
 }
 func (*IssuerDao) IssuerDelete(ctx context.Context, ids []uint64) error {
-	if err := client.MysqlDemo.WithContext(ctx).Delete(&model.Issuer{}, ids).Error; err != nil {
+	if err := client.MysqlDB.WithContext(ctx).Delete(&model.Issuer{}, ids).Error; err != nil {
 		return err
 	}
 	return nil
 }
 func (*IssuerDao) IssuerAdd(ctx context.Context, m *model.Issuer) error {
-	if err := client.MysqlDemo.WithContext(ctx).Create(m).Error; err != nil {
+	if err := client.MysqlDB.WithContext(ctx).Create(m).Error; err != nil {
 		return err
 	}
 	return nil
@@ -49,7 +49,7 @@ func (*IssuerDao) IssuerAdd(ctx context.Context, m *model.Issuer) error {
 
 func (*IssuerDao) IssuerList(ctx context.Context) ([]model.Issuer, error) {
 	var items []model.Issuer
-	if err := client.MysqlDemo.WithContext(ctx).Find(&items).Error; err != nil {
+	if err := client.MysqlDB.WithContext(ctx).Find(&items).Error; err != nil {
 		return nil, err
 	}
 	return items, nil
@@ -57,7 +57,7 @@ func (*IssuerDao) IssuerList(ctx context.Context) ([]model.Issuer, error) {
 
 func (*IssuerDao) IssuerQuery(ctx context.Context, input *input.IssuerQueryInput) (items []model.Issuer, total int64, err error) {
 	offset := (input.Page - 1) * input.Size
-	tx := client.MysqlDemo.WithContext(ctx).Model(&model.Issuer{})
+	tx := client.MysqlDB.WithContext(ctx).Model(&model.Issuer{})
 	// 动态条件
 	if input.Name != "" {
 		tx = tx.Where("name LIKE ?", input.Name+"%")

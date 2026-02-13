@@ -1,0 +1,12 @@
+.git
+.gitignore
+.idea
+
+node_modules
+web/node_modules
+web/.output
+web/.nuxt
+
+app/logs
+tmp
+*.log

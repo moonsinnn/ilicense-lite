@@ -33,15 +33,15 @@ func applyEnvOverrides() {
 		config.Config.App.JWTSecret = v
 	}
 	if v := os.Getenv("MYSQL_PASSWORD"); v != "" {
-		config.Config.MysqlDemo.DataSource.Password = v
+		config.Config.MysqlDB.DataSource.Password = v
 	}
 	if v := os.Getenv("MYSQL_USERNAME"); v != "" {
-		config.Config.MysqlDemo.DataSource.UserName = v
+		config.Config.MysqlDB.DataSource.UserName = v
 	}
 	if v := os.Getenv("MYSQL_ADDRESS"); v != "" {
-		config.Config.MysqlDemo.DataSource.Address = v
+		config.Config.MysqlDB.DataSource.Address = v
 	}
 	if v := os.Getenv("MYSQL_DB_NAME"); v != "" {
-		config.Config.MysqlDemo.DataSource.DBName = v
+		config.Config.MysqlDB.DataSource.DBName = v
 	}
 }

@@ -99,6 +99,34 @@ pnpm typecheck
 pnpm build
 ```
 
+## Container Deployment
+
+根目录已提供容器化文件：
+
+- `Dockerfile.app`
+- `Dockerfile.web`
+- `docker-compose.yml`
+- `.env.docker.example`
+
+启动步骤：
+
+```bash
+cp .env.docker.example .env.docker
+docker compose --env-file .env.docker up -d --build
+```
+
+访问地址：
+
+- Web: `http://127.0.0.1:3000`
+- App API: `http://127.0.0.1:8080`
+- MySQL: `127.0.0.1:3306`
+
+停止并清理：
+
+```bash
+docker compose --env-file .env.docker down
+```
+
 ## API and Auth
 
 - 前端通过 `web/server/api/*` 代理后端 API。

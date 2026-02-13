@@ -9,7 +9,7 @@ log:
   model: file
   dir: logs
 
-mysql_demo:
+mysql_db:
   log_file: "logs/sql.log"
   log_slow_threshold: 1000
   colorful: false
